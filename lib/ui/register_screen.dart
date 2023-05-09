@@ -1,28 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/enum/role.dart';
+import 'package:survey_project_front_end/ui/login_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
-class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  static const routeName = '/registerscreen';
+  const RegisterScreen({super.key});
 
   @override
-  State<AuthScreen> createState() => _AuthScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final formKey = GlobalKey<FormState>();
+  Roles? _roleForUser = Roles.roleUser;
+  String? roles;
+  bool? isSelected = false;
+  String? userName;
+  String? mail;
+  String? pasword;
+
+  void submitForm() {
+    final isValid = formKey.currentState?.validate();
+    if ((isValid ?? false)) {
+      formKey.currentState?.save();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
-    String? userName;
-    String? mail;
-    String? pasword;
-
-    void submitForm() {
-      final isValid = formKey.currentState?.validate();
-      if ((isValid ?? false)) {
-        formKey.currentState?.save();
-      }
-    }
-
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -136,17 +142,63 @@ class _AuthScreenState extends State<AuthScreen> {
                   const SizedBox(
                     height: 10.0,
                   ),
+                  const Text(
+                    "What is your Role?",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  RadioListTile<Roles>(
+                    title: const Text(
+                      'Admin',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    value: Roles.roleAdmin,
+                    groupValue: _roleForUser,
+                    onChanged: (Roles? value) {
+                      setState(() {
+                        _roleForUser = value;
+                      });
+                    },
+                  ),
+                  RadioListTile<Roles>(
+                    title: const Text(
+                      'User',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    value: Roles.roleUser,
+                    groupValue: _roleForUser,
+                    onChanged: (Roles? value) {
+                      setState(() {
+                        _roleForUser = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
                   CustomButton(
-                    text: "Login",
+                    text: "Create Account",
                     buttonBackroundColor: Colors.blueGrey,
                     fontSize: 20,
                     onClick: submitForm,
                   ),
                   TextButton(
                     child: const Text(
-                      "Register Account",
+                      "Login",
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(
+                        LoginScreen.routeName,
+                      );
+                    },
                   ),
                 ],
               ),
