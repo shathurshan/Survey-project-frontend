@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:survey_project_front_end/enum/role.dart';
-import 'package:survey_project_front_end/ui/login_screen.dart';
+import 'package:survey_project_front_end/ui/admin/admin_dashbord_screen.dart';
+import 'package:survey_project_front_end/ui/authendication/login_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -14,16 +15,18 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final formKey = GlobalKey<FormState>();
   Roles? _roleForUser = Roles.roleUser;
-  String? roles;
-  bool? isSelected = false;
   String? userName;
   String? mail;
   String? pasword;
+  String? role;
 
-  void submitForm() {
+  void submitSignUpForm() {
     final isValid = formKey.currentState?.validate();
-    if ((isValid ?? false)) {
+    if ((isValid ?? false) && (role ?? "").isNotEmpty) {
       formKey.currentState?.save();
+      Navigator.of(context).pushNamed(
+        AdminDashbordScreen.routeName,
+      );
     }
   }
 
@@ -36,8 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             padding: const EdgeInsets.only(
               left: 30.0,
               right: 30.0,
-              top: 200.0,
-              bottom: 100.0,
+              top: 150.0,
             ),
             child: Form(
               key: formKey,
@@ -162,6 +164,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onChanged: (Roles? value) {
                       setState(() {
                         _roleForUser = value;
+                        role = Roles.roleAdmin.names;
                       });
                     },
                   ),
@@ -178,6 +181,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onChanged: (Roles? value) {
                       setState(() {
                         _roleForUser = value;
+                        role = Roles.roleUser.names;
                       });
                     },
                   ),
@@ -188,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     text: "Create Account",
                     buttonBackroundColor: Colors.blueGrey,
                     fontSize: 20,
-                    onClick: submitForm,
+                    onClick: submitSignUpForm,
                   ),
                   TextButton(
                     child: const Text(

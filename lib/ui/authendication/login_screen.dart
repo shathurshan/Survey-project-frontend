@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:survey_project_front_end/ui/register_screen.dart';
+import 'package:survey_project_front_end/ui/authendication/register_screen.dart';
+import 'package:survey_project_front_end/ui/user/user_dashbord_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,10 +16,13 @@ class _LoginScreenState extends State<LoginScreen> {
   String? userName;
   String? pasword;
 
-  void submitForm() {
+  void submitSignInForm() {
     final isValid = formKey.currentState?.validate();
     if ((isValid ?? false)) {
       formKey.currentState?.save();
+      Navigator.of(context).pushNamed(
+        UserDashbordScreen.routeName,
+      );
     }
   }
 
@@ -104,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     text: "Login",
                     buttonBackroundColor: Colors.blueGrey,
                     fontSize: 20,
-                    onClick: submitForm,
+                    onClick: submitSignInForm,
                   ),
                   TextButton(
                     child: const Text(

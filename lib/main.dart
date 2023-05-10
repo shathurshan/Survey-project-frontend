@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:survey_project_front_end/ui/login_screen.dart';
-import 'package:survey_project_front_end/ui/register_screen.dart';
+import 'package:survey_project_front_end/ui/admin/admin_dashbord_screen.dart';
+import 'package:survey_project_front_end/ui/admin/create_post_screen.dart';
+import 'package:survey_project_front_end/ui/authendication/login_screen.dart';
+import 'package:survey_project_front_end/ui/authendication/register_screen.dart';
+import 'package:survey_project_front_end/ui/user/user_dashbord_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,11 +17,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const RegisterScreen(),
+      home: const LoginScreen(),
       debugShowCheckedModeBanner: false,
       routes: {
         LoginScreen.routeName: (ctx) => const LoginScreen(),
         RegisterScreen.routeName: (ctx) => const RegisterScreen(),
+        AdminDashbordScreen.routeName: (ctx) => const AdminDashbordScreen(),
+        UserDashbordScreen.routeName: (ctx) => const UserDashbordScreen(),
+        CreatePostSceen.routeName: (ctx) => const CreatePostSceen(),
       },
     );
   }
