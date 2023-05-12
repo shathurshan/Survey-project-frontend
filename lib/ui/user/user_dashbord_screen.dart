@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/widgets/custom_drawer.dart';
 import 'package:survey_project_front_end/widgets/survey_post_card.dart';
 
@@ -11,6 +12,13 @@ class UserDashbordScreen extends StatefulWidget {
 }
 
 class _UserDashbordScreenState extends State<UserDashbordScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    ApiManager().getSurveyPost();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
