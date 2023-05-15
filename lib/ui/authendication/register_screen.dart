@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:survey_project_front_end/enum/role.dart';
+import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/ui/admin/admin_dashbord_screen.dart';
 import 'package:survey_project_front_end/ui/authendication/login_screen.dart';
+import 'package:survey_project_front_end/ui/user/user_dashbord_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -24,9 +26,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final isValid = formKey.currentState?.validate();
     if ((isValid ?? false) && (role ?? "").isNotEmpty) {
       formKey.currentState?.save();
-      Navigator.of(context).pushNamed(
-        AdminDashbordScreen.routeName,
+      ApiManager().signUpUsers(
+        context,
+        userName,
+        mail,
+        pasword,
+        role,
       );
+      role == Roles.roleAdmin.names
+          ? Navigator.of(context).pushNamed(
+              AdminDashbordScreen.routeName,
+            )
+          : Navigator.of(context).pushNamed(
+              UserDashbordScreen.routeName,
+            );
     }
   }
 

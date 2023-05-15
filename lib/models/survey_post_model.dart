@@ -21,19 +21,25 @@ class SurveyPosts {
         id: json["id"],
         surveyName: json["surveyName"],
         questions: List<Question>.from(
-            json["questions"].map((x) => Question.fromJson(x))),
+          json["questions"].map(
+            (x) => Question.fromJson(x),
+          ),
+        ),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "surveyName": surveyName,
-        "questions":
-            List<dynamic>.from((questions ?? []).map((x) => x.toJson())),
+        "questions": List<dynamic>.from(
+          (questions ?? []).map(
+            (x) => x.toJson(),
+          ),
+        ),
       };
 }
 
 class Question {
-  dynamic id;
+  int? id;
   String? question;
   List<Answer>? answers;
 
@@ -46,19 +52,26 @@ class Question {
   factory Question.fromJson(Map<String, dynamic> json) => Question(
         id: json["id"],
         question: json["question"],
-        answers:
-            List<Answer>.from(json["answers"].map((x) => Answer.fromJson(x))),
+        answers: List<Answer>.from(
+          json["answers"].map(
+            (x) => Answer.fromJson(x),
+          ),
+        ),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "question": question,
-        "answers": List<dynamic>.from((answers ?? []).map((x) => x.toJson())),
+        "answers": List<dynamic>.from(
+          (answers ?? []).map(
+            (x) => x.toJson(),
+          ),
+        ),
       };
 }
 
 class Answer {
-  dynamic id;
+  int? id;
   String? answer;
 
   Answer({

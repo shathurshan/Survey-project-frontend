@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/models/survey_post_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/widgets/custom_drawer.dart';
 import 'package:survey_project_front_end/widgets/survey_post_card.dart';
 
 class UserDashbordScreen extends StatefulWidget {
   static const routeName = '/userdashbordscreen';
-  const UserDashbordScreen({super.key});
+  final String? type;
+  final String? token;
+  const UserDashbordScreen({
+    super.key,
+    this.type,
+    this.token,
+  });
 
   @override
   State<UserDashbordScreen> createState() => _UserDashbordScreenState();
 }
 
 class _UserDashbordScreenState extends State<UserDashbordScreen> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    ApiManager().getSurveyPost();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,13 +50,16 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
             top: 20.0,
             bottom: 20.0,
           ),
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: 6,
-            itemBuilder: (context, index) {
-              return const SurveyPostCard(
-                surveyName: "User Survey Salary",
+          child: FutureBuilder<SurveyPosts?>(
+            future: ApiManager().getSurveyPost(
+              context,
+              widget.type,
+              widget.token,
+            ),
+            builder: (context, AsyncSnapshot<SurveyPosts?> snapshot) {
+              SurveyPosts? posts = snapshot.data;
+              return SurveyPostCard(
+                surveyName: posts?.surveyName,
               );
             },
           ),

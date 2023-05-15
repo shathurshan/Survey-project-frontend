@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/models/survey_post_model.dart';
+import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/ui/admin/create_post_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_drawer.dart';
 import 'package:survey_project_front_end/widgets/survey_post_card.dart';
 
 class AdminDashbordScreen extends StatefulWidget {
   static const routeName = '/admindashbordscreen';
-  const AdminDashbordScreen({super.key});
+  final String? type;
+  final String? token;
+  const AdminDashbordScreen({
+    super.key,
+    this.token,
+    this.type,
+  });
 
   @override
   State<AdminDashbordScreen> createState() => _AdminDashbordScreenState();
@@ -43,13 +51,16 @@ class _AdminDashbordScreenState extends State<AdminDashbordScreen> {
             top: 20.0,
             bottom: 20.0,
           ),
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: 6,
-            itemBuilder: (context, index) {
-              return const SurveyPostCard(
-                surveyName: "User Survey Salary",
+          child: FutureBuilder<SurveyPosts?>(
+            future: ApiManager().getSurveyPost(
+              context,
+              widget.type,
+              widget.token,
+            ),
+            builder: (context, AsyncSnapshot<SurveyPosts?> snapshot) {
+              SurveyPosts? posts = snapshot.data;
+              return SurveyPostCard(
+                surveyName: posts?.surveyName,
               );
             },
           ),

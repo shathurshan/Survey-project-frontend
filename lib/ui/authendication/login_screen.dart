@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/enum/role.dart';
+import 'package:survey_project_front_end/models/user_model.dart';
+import 'package:survey_project_front_end/service/api_manager.dart';
+import 'package:survey_project_front_end/ui/admin/admin_dashbord_screen.dart';
 import 'package:survey_project_front_end/ui/authendication/register_screen.dart';
 import 'package:survey_project_front_end/ui/user/user_dashbord_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
@@ -20,8 +24,40 @@ class _LoginScreenState extends State<LoginScreen> {
     final isValid = formKey.currentState?.validate();
     if ((isValid ?? false)) {
       formKey.currentState?.save();
-      Navigator.of(context).pushNamed(
-        UserDashbordScreen.routeName,
+      ApiManager()
+          .signInUsers(
+        context,
+        userName,
+        pasword,
+      )
+          .then(
+        (Users? value) {
+          if (value?.roles == Roles.roleUser.names) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return UserDashbordScreen(
+                    token: value?.token,
+                    type: value?.type,
+                  );
+                },
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return AdminDashbordScreen(
+                    token: value?.token,
+                    type: value?.type,
+                  );
+                },
+              ),
+            );
+          }
+        },
       );
     }
   }
