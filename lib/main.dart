@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:survey_project_front_end/ui/admin/admin_dashbord_screen.dart';
 import 'package:survey_project_front_end/ui/admin/create_post_screen.dart';
 import 'package:survey_project_front_end/ui/authendication/login_screen.dart';
 import 'package:survey_project_front_end/ui/authendication/register_screen.dart';
@@ -22,7 +21,6 @@ class MyApp extends StatelessWidget {
       routes: {
         LoginScreen.routeName: (ctx) => const LoginScreen(),
         RegisterScreen.routeName: (ctx) => const RegisterScreen(),
-        AdminDashbordScreen.routeName: (ctx) => const AdminDashbordScreen(),
         UserDashbordScreen.routeName: (ctx) => const UserDashbordScreen(),
         CreatePostSceen.routeName: (ctx) => const CreatePostSceen(),
       },

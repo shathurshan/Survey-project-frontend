@@ -13,4 +13,5 @@ class ApiStrings {
   static var getPostsUrl = Uri.parse(getPosts);
   static var userSignin = Uri.parse(signIn);
   static var userSignUp = Uri.parse(signUp);
+  static var createPostUrl = Uri.parse(createPost);
 }

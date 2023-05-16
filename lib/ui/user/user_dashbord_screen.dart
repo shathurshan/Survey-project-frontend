@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/enum/role.dart';
 import 'package:survey_project_front_end/models/survey_post_model.dart';
+import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
+import 'package:survey_project_front_end/ui/admin/create_post_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_drawer.dart';
 import 'package:survey_project_front_end/widgets/survey_post_card.dart';
 
 class UserDashbordScreen extends StatefulWidget {
   static const routeName = '/userdashbordscreen';
-  final String? type;
-  final String? token;
+  final Users? userDetails;
   const UserDashbordScreen({
     super.key,
-    this.type,
-    this.token,
+    this.userDetails,
   });
 
   @override
@@ -28,7 +29,7 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
         centerTitle: true,
       ),
       drawer: CustomDrawer(
-        name: "Shathurshan",
+        name: widget.userDetails?.username,
         nameFontSize: 18.0,
         nameFontWeight: FontWeight.w500,
         nameTextColor: Colors.grey,
@@ -36,7 +37,7 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
         buttonFontSize: 20.0,
         buttonFontWeight: FontWeight.w700,
         buttonTextColor: Colors.red,
-        mail: "ravishathu856@gmail.com",
+        mail: widget.userDetails?.email,
         mailFontSize: 18.0,
         mailFontWeight: FontWeight.w500,
         mailTextColor: Colors.grey,
@@ -53,8 +54,8 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
           child: FutureBuilder<SurveyPosts?>(
             future: ApiManager().getSurveyPost(
               context,
-              widget.type,
-              widget.token,
+              widget.userDetails?.type,
+              widget.userDetails?.token,
             ),
             builder: (context, AsyncSnapshot<SurveyPosts?> snapshot) {
               SurveyPosts? posts = snapshot.data;
@@ -65,6 +66,26 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
           ),
         ),
       ),
+      floatingActionButton: widget.userDetails?.roles == Roles.roleAdmin.names
+          ? FloatingActionButton(
+              backgroundColor: Colors.blue,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return CreatePostSceen(
+                        userDetails: widget.userDetails,
+                      );
+                    },
+                  ),
+                );
+              },
+              child: const Icon(
+                Icons.add,
+              ),
+            )
+          : Container(),
     );
   }
 }

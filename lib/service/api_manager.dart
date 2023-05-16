@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:survey_project_front_end/models/create_post_model.dart';
+import 'package:survey_project_front_end/models/signup_model.dart';
 import 'package:survey_project_front_end/models/survey_post_model.dart';
 import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/apis/api_urls.dart';
 import 'package:survey_project_front_end/widgets/show_snackbar.dart';
 
 class ApiManager {
-  Future<String?> signUpUsers(
+  Future<SignUpModel?> signUpUsers(
     BuildContext context,
     String? username,
     String? email,
@@ -15,7 +17,7 @@ class ApiManager {
     String? roles,
   ) async {
     http.Response response;
-    String? message;
+    SignUpModel? signupModel;
     String body = json.encode({
       "username": username,
       "email": email,
@@ -38,13 +40,15 @@ class ApiManager {
       if (response.statusCode == 200) {
         var jsonSring = response.body;
         var jsonMap = json.decode(jsonSring);
-        message = jsonMap;
+        signupModel = SignUpModel.fromJson(jsonMap);
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
-            message,
+            signupModel.message,
           ),
         );
       } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
             "Unauthorized Access",
@@ -52,14 +56,13 @@ class ApiManager {
         );
       }
     } catch (e) {
-      print(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),
         ),
       );
     }
-    return message;
+    return signupModel;
   }
 
   Future<Users?> signInUsers(
@@ -87,12 +90,14 @@ class ApiManager {
         var jsonSring = response.body;
         var jsonMap = json.decode(jsonSring);
         userModel = Users.fromJson(jsonMap);
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
             "Your sucessfully login to the App",
           ),
         );
       } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
             "Unauthorized Access",
@@ -127,8 +132,8 @@ class ApiManager {
         var jsonSring = response.body;
         var jsonMap = json.decode(jsonSring);
         surveyPostModel = SurveyPosts.fromJson(jsonMap[0]);
-        print(surveyPostModel.surveyName);
       } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
             "Unauthorized Access",
@@ -136,7 +141,6 @@ class ApiManager {
         );
       }
     } catch (e) {
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),
@@ -144,5 +148,73 @@ class ApiManager {
       );
     }
     return surveyPostModel;
+  }
+
+  Future<CreatePostModel?> createPost(
+    BuildContext context,
+    String? type,
+    String? token,
+  ) async {
+    http.Response response;
+    CreatePostModel? createPostModel;
+    String body = json.encode({
+      "surveyName": "Working Experience",
+      "questions": [
+        {
+          "question": "Are you have the .NET experience?",
+          "answers": [
+            {"answer": "yes"},
+            {"answer": "No"}
+          ]
+        },
+        {
+          "question": "So you know the mobile application development?",
+          "answers": [
+            {"answer": "< 1000 USD"},
+            {"answer": "1000USD -"}
+          ]
+        }
+      ]
+    });
+    try {
+      response = await http.post(
+        ApiStrings.createPostUrl,
+        headers: {
+          "Accept": "*/*",
+          "Content-Type": "application/json",
+          "User-Agent": "PostmanRuntime/7.28.4",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Connection": "keep-alive",
+          "Authorization": "$type $token"
+        },
+        body: body,
+        encoding: Encoding.getByName("utf-8"),
+      );
+      if (response.statusCode == 200) {
+        var jsonSring = response.body;
+        var jsonMap = json.decode(jsonSring);
+        createPostModel = CreatePostModel.fromJson(jsonMap);
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            createPostModel.message,
+          ),
+        );
+      } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "Unauthorized Access",
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        showSnackBarToScreen(
+          e.toString(),
+        ),
+      );
+    }
+    return createPostModel;
   }
 }

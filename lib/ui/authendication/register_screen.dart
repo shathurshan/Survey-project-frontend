@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:survey_project_front_end/enum/role.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
-import 'package:survey_project_front_end/ui/admin/admin_dashbord_screen.dart';
 import 'package:survey_project_front_end/ui/authendication/login_screen.dart';
-import 'package:survey_project_front_end/ui/user/user_dashbord_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -16,30 +14,31 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final formKey = GlobalKey<FormState>();
-  Roles? _roleForUser = Roles.roleUser;
   String? userName;
   String? mail;
   String? pasword;
-  String? role;
+  String? role = Roles.roleUser.names;
 
   void submitSignUpForm() {
     final isValid = formKey.currentState?.validate();
     if ((isValid ?? false) && (role ?? "").isNotEmpty) {
-      formKey.currentState?.save();
-      ApiManager().signUpUsers(
+      ApiManager()
+          .signUpUsers(
         context,
-        userName,
-        mail,
-        pasword,
-        role,
-      );
-      role == Roles.roleAdmin.names
-          ? Navigator.of(context).pushNamed(
-              AdminDashbordScreen.routeName,
-            )
-          : Navigator.of(context).pushNamed(
-              UserDashbordScreen.routeName,
+        userName?.trim(),
+        mail?.trim(),
+        pasword?.trim(),
+        Roles.roleUser.names,
+      )
+          .then(
+        (value) {
+          if (value != null) {
+            Navigator.of(context).pushNamed(
+              LoginScreen.routeName,
             );
+          }
+        },
+      );
     }
   }
 
@@ -153,50 +152,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10.0,
-                  ),
-                  const Text(
-                    "What is your Role?",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  RadioListTile<Roles>(
-                    title: const Text(
-                      'Admin',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    value: Roles.roleAdmin,
-                    groupValue: _roleForUser,
-                    onChanged: (Roles? value) {
-                      setState(() {
-                        _roleForUser = value;
-                        role = Roles.roleAdmin.names;
-                      });
-                    },
-                  ),
-                  RadioListTile<Roles>(
-                    title: const Text(
-                      'User',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    value: Roles.roleUser,
-                    groupValue: _roleForUser,
-                    onChanged: (Roles? value) {
-                      setState(() {
-                        _roleForUser = value;
-                        role = Roles.roleUser.names;
-                      });
-                    },
                   ),
                   const SizedBox(
                     height: 10.0,
