@@ -51,16 +51,27 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
             top: 20.0,
             bottom: 20.0,
           ),
-          child: FutureBuilder<SurveyPosts?>(
-            future: ApiManager().getSurveyPost(
+          child: FutureBuilder<List<dynamic>?>(
+            future: ApiManager().getAllSurveyPost(
               context,
               widget.userDetails?.type,
               widget.userDetails?.token,
             ),
-            builder: (context, AsyncSnapshot<SurveyPosts?> snapshot) {
-              SurveyPosts? posts = snapshot.data;
-              return SurveyPostCard(
-                surveyName: posts?.surveyName,
+            builder: (context, AsyncSnapshot<List<dynamic>?> snapshot) {
+              List<dynamic>? posts = snapshot.data;
+              print("nker${snapshot.data?[1]}");
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return ListView.builder(
+                itemCount: snapshot.data?.length,
+                itemBuilder: (context, index) {
+                  return SurveyPostCard(
+                    surveyName: snapshot.data?[index]["surveyName"],
+                  );
+                },
               );
             },
           ),

@@ -18,6 +18,9 @@ class CreatePostSceen extends StatefulWidget {
 
 class _CreatePostSceenState extends State<CreatePostSceen> {
   int i = 1;
+  final _surveyNameController = TextEditingController();
+  final List qustions = [];
+  final List ans = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,8 +38,9 @@ class _CreatePostSceenState extends State<CreatePostSceen> {
           ),
           child: Column(
             children: [
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                controller: _surveyNameController,
+                decoration: const InputDecoration(
                   labelText: "Survey Name",
                   labelStyle: TextStyle(
                     color: Colors.black,
@@ -63,6 +67,14 @@ class _CreatePostSceenState extends State<CreatePostSceen> {
                         });
                       }
                     },
+                    callback: (p0) {
+                      setState(() {
+                        qustions.add(p0);
+                      });
+                    },
+                    answerList: (p0) {
+                      ans == p0;
+                    },
                   );
                 },
               ),
@@ -86,6 +98,9 @@ class _CreatePostSceenState extends State<CreatePostSceen> {
             context,
             widget.userDetails?.type,
             widget.userDetails?.token,
+            _surveyNameController.text,
+            qustions,
+            ans,
           );
         },
         fontSize: 40,

@@ -114,12 +114,12 @@ class ApiManager {
     return userModel;
   }
 
-  Future<SurveyPosts?> getSurveyPost(
+  Future<List<dynamic>?> getAllSurveyPost(
     BuildContext context,
     String? type,
     String? token,
   ) async {
-    SurveyPosts? surveyPostModel;
+    List<SurveyPosts>? surveyPostModel;
     http.Response response;
     try {
       response = await http.get(
@@ -129,9 +129,8 @@ class ApiManager {
         },
       );
       if (response.statusCode == 200) {
-        var jsonSring = response.body;
-        var jsonMap = json.decode(jsonSring);
-        surveyPostModel = SurveyPosts.fromJson(jsonMap[0]);
+        var jsonResponse = json.decode(response.body);
+        return jsonResponse;
       } else if (response.statusCode == 401) {
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
@@ -141,6 +140,7 @@ class ApiManager {
         );
       }
     } catch (e) {
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),
@@ -154,11 +154,14 @@ class ApiManager {
     BuildContext context,
     String? type,
     String? token,
+    String? surveyName,
+    List? questions,
+    List? answers,
   ) async {
     http.Response response;
     CreatePostModel? createPostModel;
     String body = json.encode({
-      "surveyName": "Working Experience",
+      "surveyName": surveyName,
       "questions": [
         {
           "question": "Are you have the .NET experience?",
@@ -176,6 +179,8 @@ class ApiManager {
         }
       ]
     });
+    print(questions);
+    print(answers);
     try {
       response = await http.post(
         ApiStrings.createPostUrl,
@@ -205,6 +210,13 @@ class ApiManager {
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
             "Unauthorized Access",
+          ),
+        );
+      } else if (response.statusCode == 400) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "Error: Survey Name is already exist!",
           ),
         );
       }

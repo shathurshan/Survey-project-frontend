@@ -4,10 +4,14 @@ import 'package:survey_project_front_end/ui/admin/answer_field.dart';
 class QueationAnswerCard extends StatefulWidget {
   final Function()? onclickCloseFunction;
   final int? queNumber;
+  final Function(String)? callback;
+  final Function(List)? answerList;
   const QueationAnswerCard({
     super.key,
     required this.onclickCloseFunction,
     this.queNumber,
+    this.callback,
+    this.answerList,
   });
 
   @override
@@ -16,6 +20,8 @@ class QueationAnswerCard extends StatefulWidget {
 
 class _QueationAnswerCardState extends State<QueationAnswerCard> {
   int y = 1;
+  final _surveyQuestionController = TextEditingController();
+  final List answers = [];
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -53,6 +59,14 @@ class _QueationAnswerCardState extends State<QueationAnswerCard> {
               height: 10.0,
             ),
             TextField(
+              controller: _surveyQuestionController,
+              onChanged: (value) {
+                widget.callback != null ? (value) : ("");
+                setState(() {
+                  _surveyQuestionController.text = value;
+                });
+                widget.answerList != null ? (answers) : ([]);
+              },
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: "Question ${widget.queNumber}",
@@ -77,6 +91,12 @@ class _QueationAnswerCardState extends State<QueationAnswerCard> {
                     itemBuilder: (context, index) {
                       return CreatePostAnswerField(
                         answerNumber: y,
+                        callback: (p0) {
+                          setState(() {
+                            answers.add(p0);
+                            print(answers);
+                          });
+                        },
                       );
                     },
                   ),
