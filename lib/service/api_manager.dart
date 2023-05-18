@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:survey_project_front_end/models/create_post_model.dart';
 import 'package:survey_project_front_end/models/signup_model.dart';
 import 'package:survey_project_front_end/models/survey_post_model.dart';
+import 'package:survey_project_front_end/models/survey_response_model.dart';
 import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/apis/api_urls.dart';
 import 'package:survey_project_front_end/widgets/show_snackbar.dart';
@@ -140,7 +141,6 @@ class ApiManager {
         );
       }
     } catch (e) {
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),
@@ -179,8 +179,6 @@ class ApiManager {
         }
       ]
     });
-    print(questions);
-    print(answers);
     try {
       response = await http.post(
         ApiStrings.createPostUrl,
@@ -228,5 +226,76 @@ class ApiManager {
       );
     }
     return createPostModel;
+  }
+
+  Future<SurveyPosts?> getSurveyPostById(
+    BuildContext context,
+    String? type,
+    String? token,
+    String? postId,
+  ) async {
+    SurveyPosts? surveyPost;
+    http.Response response;
+    try {
+      response = await http.get(
+        Uri.parse(ApiStrings.getPostsById.replaceAll("id", postId ?? "")),
+        headers: {
+          "Authorization": "$type $token",
+        },
+      );
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        surveyPost = SurveyPosts.fromJson(jsonResponse);
+      } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "Unauthorized Access",
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        showSnackBarToScreen(
+          e.toString(),
+        ),
+      );
+    }
+    return surveyPost;
+  }
+
+  Future<List<dynamic>?> getAllSurveyResponse(
+    BuildContext context,
+    String? type,
+    String? token,
+  ) async {
+    List<SureveyResponse>? surveyResponesModel;
+    http.Response response;
+    try {
+      response = await http.get(
+        ApiStrings.getSurveyResponseUrl,
+        headers: {
+          "Authorization": "$type $token",
+        },
+      );
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        return jsonResponse;
+      } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "Unauthorized Access",
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        showSnackBarToScreen(
+          e.toString(),
+        ),
+      );
+    }
+    return surveyResponesModel;
   }
 }

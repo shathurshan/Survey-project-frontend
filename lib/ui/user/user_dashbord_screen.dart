@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:survey_project_front_end/enum/role.dart';
-import 'package:survey_project_front_end/models/survey_post_model.dart';
 import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/ui/admin/create_post_screen.dart';
+import 'package:survey_project_front_end/ui/user/question_answer_dashbord.dart';
+import 'package:survey_project_front_end/ui/user/response_dashbord.dart';
 import 'package:survey_project_front_end/widgets/custom_drawer.dart';
 import 'package:survey_project_front_end/widgets/survey_post_card.dart';
 
@@ -41,7 +42,11 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
         mailFontSize: 18.0,
         mailFontWeight: FontWeight.w500,
         mailTextColor: Colors.grey,
-        onClickFunction: () {},
+        onClickFunction: () {
+          Navigator.of(context).pushNamed(
+            ResponseDashbordScreen.routeName,
+          );
+        },
       ),
       body: SafeArea(
         child: Padding(
@@ -59,17 +64,42 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
             ),
             builder: (context, AsyncSnapshot<List<dynamic>?> snapshot) {
               List<dynamic>? posts = snapshot.data;
-              print("nker${snapshot.data?[1]}");
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               }
               return ListView.builder(
-                itemCount: snapshot.data?.length,
+                itemCount: posts?.length,
                 itemBuilder: (context, index) {
                   return SurveyPostCard(
-                    surveyName: snapshot.data?[index]["surveyName"],
+                    surveyName: posts?[index]["surveyName"],
+                    surveyId: posts?[index]["id"],
+                    onClickCardFunction: () {
+                      ApiManager()
+                          .getSurveyPostById(
+                        context,
+                        widget.userDetails?.type,
+                        widget.userDetails?.token,
+                        posts?[index]["id"],
+                      )
+                          .then(
+                        (value) {
+                          if (value != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return QuestionAnswerDashbordScreen(
+                                    surveyPosts: value,
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    },
                   );
                 },
               );

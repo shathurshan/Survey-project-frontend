@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class SurveyPostCard extends StatelessWidget {
   final String? surveyName;
   final String? createdDate;
+  final String? surveyId;
   final Color? surveyNameTextColor;
   final Function()? onClickCardFunction;
   const SurveyPostCard({
@@ -11,6 +12,7 @@ class SurveyPostCard extends StatelessWidget {
     this.createdDate,
     this.surveyNameTextColor,
     this.onClickCardFunction,
+    this.surveyId,
   });
 
   @override
@@ -54,6 +56,18 @@ class SurveyPostCard extends StatelessWidget {
             ),
             Text(
               "Created Date: ${createdDate ?? "2023-05-10"}",
+              style: const TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w800,
+                fontSize: 12,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              "Id: ${surveyId ?? "No Id"}",
               style: const TextStyle(
                 color: Colors.grey,
                 fontWeight: FontWeight.w800,

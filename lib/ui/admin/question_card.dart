@@ -94,7 +94,6 @@ class _QueationAnswerCardState extends State<QueationAnswerCard> {
                         callback: (p0) {
                           setState(() {
                             answers.add(p0);
-                            print(answers);
                           });
                         },
                       );
