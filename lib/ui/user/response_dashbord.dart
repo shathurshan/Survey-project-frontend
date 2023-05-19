@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/models/survey_response_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
+import 'package:survey_project_front_end/ui/user/view_response_screen.dart';
 import 'package:survey_project_front_end/widgets/survey_post_card.dart';
 
 class ResponseDashbordScreen extends StatefulWidget {
   static const routeName = '/responsedashbordscreen';
   final String? token;
   final String? type;
+  final List<dynamic>? responseData;
   const ResponseDashbordScreen({
     super.key,
     this.token,
     this.type,
+    this.responseData,
   });
 
   @override
@@ -32,27 +36,37 @@ class _ResponseDashbordScreenState extends State<ResponseDashbordScreen> {
             top: 20.0,
             bottom: 20.0,
           ),
-          child: FutureBuilder<List<dynamic>?>(
-            future: ApiManager().getAllSurveyResponse(
-              context,
-              widget.type,
-              widget.token,
-            ),
-            builder: (context, snapshot) {
-              List<dynamic>? response = snapshot.data;
-              print(response);
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return ListView.builder(
-                itemCount: response?.length,
-                itemBuilder: (context, index) {
-                  return SurveyPostCard(
-                    surveyName: response?[index]["surveyName"],
+          child: ListView.builder(
+            itemCount: widget.responseData?.length,
+            itemBuilder: (context, index) {
+              return SurveyPostCard(
+                surveyName: widget.responseData?[index]["surveyName"],
+                onClickCardFunction: () {
+                  ApiManager()
+                      .getSurveyResponseById(
+                    context,
+                    widget.type,
+                    widget.token,
+                    widget.responseData?[index]["id"],
+                  )
+                      .then(
+                    (SureveyResponse? value) {
+                      if (value != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return ViewResponseScreen(
+                                surveyResponseDetails: value,
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    },
                   );
                 },
+                surveyId: widget.responseData?[index]["id"],
               );
             },
           ),

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/models/submit_survey_response_model.dart';
 import 'package:survey_project_front_end/models/survey_post_model.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
 class QuestionAnswerDashbordScreen extends StatefulWidget {
   static const routeName = '/questionanswerdashbordscreen';
   final SurveyPosts? surveyPosts;
+  final String? surveyName;
   const QuestionAnswerDashbordScreen({
     super.key,
     this.surveyPosts,
+    this.surveyName,
   });
 
   @override
@@ -17,9 +20,55 @@ class QuestionAnswerDashbordScreen extends StatefulWidget {
 
 class _QuestionAnswerDashbordScreenState
     extends State<QuestionAnswerDashbordScreen> {
+  var _questionIndex = 0;
+  String? buttonText = "Next Questions";
   String? selectedAnswer;
-  Color? backgroundColor = Colors.white;
-  bool? isSelected = false;
+  String? answeredQuestion;
+  List<SubmitsurveyQuestions>? questionList;
+
+  void _answerQuestion() {
+    _questionIndex = _questionIndex + 1;
+    if (_questionIndex < (widget.surveyPosts?.questions?.length ?? 1)) {
+      setState(() {
+        buttonText = "Next Questions";
+      });
+    } else {
+      setState(() {
+        buttonText = "Submit";
+      });
+    }
+    setState(() {
+      questionList?.add(
+        SubmitsurveyQuestions(
+          question: answeredQuestion ?? "",
+          answer: selectedAnswer ?? "",
+        ),
+      );
+    });
+  }
+
+  void addingToQuestionList(String answer) {
+    setState(() {
+      selectedAnswer = answer;
+      answeredQuestion =
+          _questionIndex <= (widget.surveyPosts?.questions?.length ?? 1)
+              ? (widget.surveyPosts?.questions ?? [])[_questionIndex].question
+              : "";
+    });
+  }
+
+  void submitSurveyAnswers() {
+    SubmitSurveyResponse(
+      surveyName: widget.surveyName ?? "",
+      questions: questionList ?? [],
+    );
+    print(questionList);
+    print(selectedAnswer);
+    print(_questionIndex <= (widget.surveyPosts?.questions?.length ?? 1)
+        ? (widget.surveyPosts?.questions ?? [])[_questionIndex - 1].question
+        : "");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,113 +83,66 @@ class _QuestionAnswerDashbordScreenState
             right: 25.0,
             left: 25.0,
           ),
-          child: SingleChildScrollView(
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: widget.surveyPosts?.questions?.length,
-              itemBuilder: (context, index) {
-                Question? surveyQution = widget.surveyPosts?.questions?[index];
-                return Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.only(
-                    top: 20.0,
-                    left: 10.0,
-                    right: 10.0,
-                    bottom: 20.0,
-                  ),
-                  margin: const EdgeInsets.only(
-                    bottom: 10.0,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text("${(index + 1)}. "),
-                          Text(surveyQution?.question ?? ""),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: surveyQution?.answers?.length,
-                        itemBuilder: (context, index) {
-                          Answer? surveyQutionAnswer =
-                              surveyQution?.answers?[index];
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                isSelected = true;
-                                selectedAnswer = surveyQutionAnswer?.answer;
-                                backgroundColor = (isSelected ?? false)
-                                    ? Colors.green
-                                    : Colors.white;
-                              });
-                              print(surveyQutionAnswer?.answer);
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.only(
-                                top: 20.0,
-                                left: 10.0,
-                                right: 10.0,
-                                bottom: 20.0,
-                              ),
-                              margin: const EdgeInsets.only(
-                                bottom: 10.0,
-                              ),
-                              decoration: BoxDecoration(
-                                color: backgroundColor ?? Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(surveyQutionAnswer?.answer ?? ""),
-                                ],
-                              ),
+          child: _questionIndex < (widget.surveyPosts?.questions?.length ?? 1)
+              ? Column(
+                  children: [
+                    question(
+                      context,
+                      widget.surveyPosts?.questions?[_questionIndex].question
+                          .toString(),
+                    ), //Question
+                    ...(widget.surveyPosts?.questions?[_questionIndex]
+                                .answers ??
+                            [])
+                        .map(
+                      (Answer? answersList) {
+                        return SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () =>
+                                addingToQuestionList(answersList?.answer ?? ""),
+                            style: ButtonStyle(
+                                textStyle: MaterialStateProperty.all(
+                                    const TextStyle(color: Colors.white)),
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.green)),
+                            child: Text(
+                              answersList?.answer ?? "",
                             ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
+                          ),
+                        );
+                      },
+                    ).toList()
+                  ],
+                ) //Quiz
+              : const Center(
+                  child: Text("Thanks for answering the questions"),
+                ),
         ),
       ),
-      bottomNavigationBar: const CustomButton(
+      bottomNavigationBar: CustomButton(
         buttonHeight: 70,
-        text: "Submit",
+        text: buttonText ?? "submit",
         fontSize: 40,
         fontWeight: FontWeight.w800,
         buttonBackroundColor: Colors.blueGrey,
+        onClick: buttonText == "Submit" ? submitSurveyAnswers : _answerQuestion,
       ),
     );
+  }
+
+  Widget question(
+    BuildContext context,
+    String? questionText,
+  ) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.all(10),
+      child: Text(
+        questionText ?? "",
+        style: const TextStyle(fontSize: 28),
+        textAlign: TextAlign.center,
+      ), //Text
+    ); //Container
   }
 }

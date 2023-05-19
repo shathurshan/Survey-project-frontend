@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:survey_project_front_end/enum/role.dart';
+import 'package:survey_project_front_end/models/survey_post_model.dart';
 import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/ui/admin/create_post_screen.dart';
@@ -43,8 +44,27 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
         mailFontWeight: FontWeight.w500,
         mailTextColor: Colors.grey,
         onClickFunction: () {
-          Navigator.of(context).pushNamed(
-            ResponseDashbordScreen.routeName,
+          ApiManager()
+              .getAllSurveyResponse(
+            context,
+            widget.userDetails?.type,
+            widget.userDetails?.token,
+          )
+              .then(
+            (value) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ResponseDashbordScreen(
+                      responseData: value,
+                      token: widget.userDetails?.token,
+                      type: widget.userDetails?.type,
+                    );
+                  },
+                ),
+              );
+            },
           );
         },
       ),
@@ -84,7 +104,7 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
                         posts?[index]["id"],
                       )
                           .then(
-                        (value) {
+                        (SurveyPosts? value) {
                           if (value != null) {
                             Navigator.push(
                               context,
@@ -92,6 +112,7 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
                                 builder: (context) {
                                   return QuestionAnswerDashbordScreen(
                                     surveyPosts: value,
+                                    surveyName: posts?[index]["surveyName"],
                                   );
                                 },
                               ),

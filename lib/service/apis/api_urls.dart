@@ -10,6 +10,8 @@ class ApiStrings {
   static const String signIn = "http://$ip:8080/api/auth/signin";
   static const String signUp = "http://$ip:8080/api/auth/signup";
   static const String getSurveyResponse = "http://$ip:8080/api/response/posts";
+  static const String getSurveyResponseById =
+      "http://$ip:8080/api/response/posts/id";
 
   static var getPostsUrl = Uri.parse(getPosts);
   static var userSignin = Uri.parse(signIn);
@@ -17,4 +19,5 @@ class ApiStrings {
   static var createPostUrl = Uri.parse(createPost);
   static var getPostByIdUrl = Uri.parse(getPostsById);
   static var getSurveyResponseUrl = Uri.parse(getSurveyResponse);
+  static var getSurveyResponseByIdUrl = Uri.parse(getSurveyResponseById);
 }

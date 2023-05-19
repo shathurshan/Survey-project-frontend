@@ -298,4 +298,41 @@ class ApiManager {
     }
     return surveyResponesModel;
   }
+
+  Future<SureveyResponse?> getSurveyResponseById(
+    BuildContext context,
+    String? type,
+    String? token,
+    String? responseId,
+  ) async {
+    SureveyResponse? surveyResponse;
+    http.Response response;
+    try {
+      response = await http.get(
+        Uri.parse(ApiStrings.getSurveyResponseById
+            .replaceAll("id", responseId ?? "")),
+        headers: {
+          "Authorization": "$type $token",
+        },
+      );
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        surveyResponse = SureveyResponse.fromJson(jsonResponse);
+      } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "Unauthorized Access",
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        showSnackBarToScreen(
+          e.toString(),
+        ),
+      );
+    }
+    return surveyResponse;
+  }
 }
