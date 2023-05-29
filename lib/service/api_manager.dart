@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:survey_project_front_end/models/create_post_model.dart';
+import 'package:survey_project_front_end/models/create_survey_response_model.dart';
 import 'package:survey_project_front_end/models/signup_model.dart';
+import 'package:survey_project_front_end/models/submit_survey_response_model.dart';
 import 'package:survey_project_front_end/models/survey_post_model.dart';
 import 'package:survey_project_front_end/models/survey_response_model.dart';
 import 'package:survey_project_front_end/models/user_model.dart';
@@ -323,6 +325,67 @@ class ApiManager {
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
             "Unauthorized Access",
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        showSnackBarToScreen(
+          e.toString(),
+        ),
+      );
+    }
+    return surveyResponse;
+  }
+
+  Future<CreateSurveyResponseModel?> createSurveyResponse(
+    BuildContext context,
+    SubmitSurveyResponse? createResponseBody,
+    String? type,
+    String? token,
+  ) async {
+    http.Response response;
+    CreateSurveyResponseModel? surveyResponse;
+    String body = json.encode({
+      "surveyName": createResponseBody?.surveyName,
+      "questions": createResponseBody?.questions,
+    });
+    try {
+      response = await http.post(
+        ApiStrings.createResponseUrl,
+        headers: {
+          "Accept": "*/*",
+          "Content-Type": "application/json",
+          "User-Agent": "PostmanRuntime/7.28.4",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Connection": "keep-alive",
+          "Authorization": "$type $token"
+        },
+        body: body,
+        encoding: Encoding.getByName("utf-8"),
+      );
+      if (response.statusCode == 200) {
+        var jsonSring = response.body;
+        var jsonMap = json.decode(jsonSring);
+        surveyResponse = CreateSurveyResponseModel.fromJson(jsonMap);
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            surveyResponse.message,
+          ),
+        );
+      } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "Unauthorized Access",
+          ),
+        );
+      } else if (response.statusCode == 400) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "Error: Survey Name is already exist!",
           ),
         );
       }

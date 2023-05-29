@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:survey_project_front_end/models/submit_survey_response_model.dart';
 import 'package:survey_project_front_end/models/survey_post_model.dart';
+import 'package:survey_project_front_end/service/api_manager.dart';
+import 'package:survey_project_front_end/ui/user/user_dashbord_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
 class QuestionAnswerDashbordScreen extends StatefulWidget {
   static const routeName = '/questionanswerdashbordscreen';
   final SurveyPosts? surveyPosts;
   final String? surveyName;
+  final String? type;
+  final String? token;
   const QuestionAnswerDashbordScreen({
     super.key,
     this.surveyPosts,
     this.surveyName,
+    this.token,
+    this.type,
   });
 
   @override
@@ -24,7 +30,7 @@ class _QuestionAnswerDashbordScreenState
   String? buttonText = "Next Questions";
   String? selectedAnswer;
   String? answeredQuestion;
-  List<SubmitsurveyQuestions>? questionList;
+  List<SubmitsurveyQuestions>? questionList = [];
 
   void _answerQuestion() {
     _questionIndex = _questionIndex + 1;
@@ -58,15 +64,18 @@ class _QuestionAnswerDashbordScreenState
   }
 
   void submitSurveyAnswers() {
-    SubmitSurveyResponse(
-      surveyName: widget.surveyName ?? "",
-      questions: questionList ?? [],
+    ApiManager().createSurveyResponse(
+      context,
+      SubmitSurveyResponse(
+        surveyName: widget.surveyName ?? "",
+        questions: questionList ?? [],
+      ),
+      widget.type,
+      widget.token,
     );
-    print(questionList);
-    print(selectedAnswer);
-    print(_questionIndex <= (widget.surveyPosts?.questions?.length ?? 1)
-        ? (widget.surveyPosts?.questions ?? [])[_questionIndex - 1].question
-        : "");
+    Navigator.of(context).pushNamed(
+      UserDashbordScreen.routeName,
+    );
   }
 
   @override

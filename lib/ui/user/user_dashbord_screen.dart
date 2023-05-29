@@ -113,6 +113,8 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
                                   return QuestionAnswerDashbordScreen(
                                     surveyPosts: value,
                                     surveyName: posts?[index]["surveyName"],
+                                    token: widget.userDetails?.token,
+                                    type: widget.userDetails?.type,
                                   );
                                 },
                               ),
