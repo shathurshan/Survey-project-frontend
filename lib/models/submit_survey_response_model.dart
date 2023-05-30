@@ -36,8 +36,8 @@ class SubmitSurveyResponse {
 }
 
 class SubmitsurveyQuestions {
-  String question;
-  String answer;
+  String? question;
+  String? answer;
 
   SubmitsurveyQuestions({
     required this.question,

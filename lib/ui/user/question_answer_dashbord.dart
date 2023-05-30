@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:survey_project_front_end/models/submit_survey_response_model.dart';
 import 'package:survey_project_front_end/models/survey_post_model.dart';
+import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
-import 'package:survey_project_front_end/ui/user/user_dashbord_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
 class QuestionAnswerDashbordScreen extends StatefulWidget {
   static const routeName = '/questionanswerdashbordscreen';
   final SurveyPosts? surveyPosts;
   final String? surveyName;
-  final String? type;
-  final String? token;
+  final Users? userDetails;
   const QuestionAnswerDashbordScreen({
     super.key,
     this.surveyPosts,
     this.surveyName,
-    this.token,
-    this.type,
+    this.userDetails,
   });
 
   @override
@@ -32,7 +30,7 @@ class _QuestionAnswerDashbordScreenState
   String? answeredQuestion;
   List<SubmitsurveyQuestions>? questionList = [];
 
-  void _answerQuestion() {
+  void _answerQuestion(String answer) {
     _questionIndex = _questionIndex + 1;
     if (_questionIndex < (widget.surveyPosts?.questions?.length ?? 1)) {
       setState(() {
@@ -46,35 +44,32 @@ class _QuestionAnswerDashbordScreenState
     setState(() {
       questionList?.add(
         SubmitsurveyQuestions(
-          question: answeredQuestion ?? "",
-          answer: selectedAnswer ?? "",
+          question:
+              _questionIndex <= (widget.surveyPosts?.questions?.length ?? 1)
+                  ? (widget.surveyPosts?.questions ?? [])[_questionIndex - 1]
+                      .question
+                  : "",
+          answer: answer,
         ),
       );
     });
   }
 
-  void addingToQuestionList(String answer) {
-    setState(() {
-      selectedAnswer = answer;
-      answeredQuestion =
-          _questionIndex <= (widget.surveyPosts?.questions?.length ?? 1)
-              ? (widget.surveyPosts?.questions ?? [])[_questionIndex].question
-              : "";
-    });
-  }
-
-  void submitSurveyAnswers() {
-    ApiManager().createSurveyResponse(
+  void submitSurveyAnswers(BuildContext ctx) {
+    ApiManager()
+        .createSurveyResponse(
       context,
-      SubmitSurveyResponse(
-        surveyName: widget.surveyName ?? "",
-        questions: questionList ?? [],
-      ),
-      widget.type,
-      widget.token,
-    );
-    Navigator.of(context).pushNamed(
-      UserDashbordScreen.routeName,
+      widget.surveyName ?? "",
+      questionList ?? [],
+      widget.userDetails?.type,
+      widget.userDetails?.token,
+    )
+        .then(
+      (value) {
+        if (value != null) {
+          Navigator.pop(context);
+        }
+      },
     );
   }
 
@@ -109,7 +104,7 @@ class _QuestionAnswerDashbordScreenState
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () =>
-                                addingToQuestionList(answersList?.answer ?? ""),
+                                _answerQuestion(answersList?.answer ?? ""),
                             style: ButtonStyle(
                                 textStyle: MaterialStateProperty.all(
                                     const TextStyle(color: Colors.white)),
@@ -135,7 +130,9 @@ class _QuestionAnswerDashbordScreenState
         fontSize: 40,
         fontWeight: FontWeight.w800,
         buttonBackroundColor: Colors.blueGrey,
-        onClick: buttonText == "Submit" ? submitSurveyAnswers : _answerQuestion,
+        onClick: () {
+          submitSurveyAnswers(context);
+        },
       ),
     );
   }

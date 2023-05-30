@@ -4,6 +4,7 @@ import 'package:survey_project_front_end/models/survey_post_model.dart';
 import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/ui/admin/create_post_screen.dart';
+import 'package:survey_project_front_end/ui/admin/survey_post_admin_detail_scree.dart';
 import 'package:survey_project_front_end/ui/user/question_answer_dashbord.dart';
 import 'package:survey_project_front_end/ui/user/response_dashbord.dart';
 import 'package:survey_project_front_end/widgets/custom_drawer.dart';
@@ -95,34 +96,62 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
                   return SurveyPostCard(
                     surveyName: posts?[index]["surveyName"],
                     surveyId: posts?[index]["id"],
-                    onClickCardFunction: () {
-                      ApiManager()
-                          .getSurveyPostById(
-                        context,
-                        widget.userDetails?.type,
-                        widget.userDetails?.token,
-                        posts?[index]["id"],
-                      )
-                          .then(
-                        (SurveyPosts? value) {
-                          if (value != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return QuestionAnswerDashbordScreen(
-                                    surveyPosts: value,
-                                    surveyName: posts?[index]["surveyName"],
-                                    token: widget.userDetails?.token,
-                                    type: widget.userDetails?.type,
-                                  );
-                                },
-                              ),
-                            );
-                          }
-                        },
-                      );
-                    },
+                    onClickCardFunction:
+                        widget.userDetails?.roles == Roles.roleUser.names
+                            ? () {
+                                ApiManager()
+                                    .getSurveyPostById(
+                                  context,
+                                  widget.userDetails?.type,
+                                  widget.userDetails?.token,
+                                  posts?[index]["id"],
+                                )
+                                    .then(
+                                  (SurveyPosts? value) {
+                                    if (value != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return QuestionAnswerDashbordScreen(
+                                              surveyPosts: value,
+                                              surveyName: posts?[index]
+                                                  ["surveyName"],
+                                              userDetails: widget.userDetails,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    }
+                                  },
+                                );
+                              }
+                            : () {
+                                ApiManager()
+                                    .getSurveyPostById(
+                                  context,
+                                  widget.userDetails?.type,
+                                  widget.userDetails?.token,
+                                  posts?[index]["id"],
+                                )
+                                    .then(
+                                  (SurveyPosts? value) {
+                                    if (value != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return SurveyPostAdminDetailScreen(
+                                              surveyPosts: value,
+                                              userDetails: widget.userDetails,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    }
+                                  },
+                                );
+                              },
                   );
                 },
               );

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:survey_project_front_end/models/survey_response_model.dart';
 
 class ViewResponseScreen extends StatelessWidget {
-  static const routeName = '/userdashbordscreen';
+  static const routeName = '/userviewresponsescreen';
   final SureveyResponse? surveyResponseDetails;
   const ViewResponseScreen({
     super.key,

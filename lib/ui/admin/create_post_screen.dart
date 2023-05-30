@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/models/submit_survey_post_model.dart';
 import 'package:survey_project_front_end/models/user_model.dart';
-import 'package:survey_project_front_end/service/api_manager.dart';
-import 'package:survey_project_front_end/ui/admin/question_card.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
 class CreatePostSceen extends StatefulWidget {
@@ -17,10 +16,22 @@ class CreatePostSceen extends StatefulWidget {
 }
 
 class _CreatePostSceenState extends State<CreatePostSceen> {
-  int i = 1;
+  var i = 1;
+  final createPostFormKey = GlobalKey<FormState>();
   final _surveyNameController = TextEditingController();
-  final List qustions = [];
-  final List ans = [];
+  final _questionController = TextEditingController();
+  final _answerController = TextEditingController();
+  final List<SubmitSurveyPostQuestion>? questionList = [];
+  final List<SubmitSurveyPostAnswer>? answerList = [];
+
+  @override
+  void dispose() {
+    _surveyNameController.dispose();
+    _questionController.dispose();
+    _answerController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,76 +47,120 @@ class _CreatePostSceenState extends State<CreatePostSceen> {
             top: 20.0,
             bottom: 20.0,
           ),
-          child: Column(
-            children: [
-              TextField(
-                controller: _surveyNameController,
-                decoration: const InputDecoration(
-                  labelText: "Survey Name",
-                  labelStyle: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 17,
-                    overflow: TextOverflow.ellipsis,
+          child: Form(
+            key: createPostFormKey,
+            child: Column(
+              children: [
+                (questionList ?? []).isEmpty
+                    ? TextFormField(
+                        controller: _surveyNameController,
+                        decoration: const InputDecoration(
+                          labelText: "Survey Name",
+                          labelStyle: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 17,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      )
+                    : Container(),
+                const SizedBox(
+                  height: 20.0,
+                ),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 20.0,
+                      right: 20.0,
+                      bottom: 35.0,
+                    ),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _questionController,
+                          decoration: const InputDecoration(
+                            labelText: "Question",
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 17,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: i,
+                          itemBuilder: (context, index) {
+                            return TextFormField(
+                              controller: _answerController,
+                              decoration: const InputDecoration(
+                                labelText: "Answer",
+                                labelStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 17,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(
+                          height: 20.0,
+                        ),
+                        CustomButton(
+                          buttonHeight: 30,
+                          buttonWidth: 80,
+                          text: "Add Answer",
+                          onClick: () {
+                            setState(() {
+                              i++;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: i,
-                itemBuilder: (context, index) {
-                  return QueationAnswerCard(
-                    queNumber: i,
-                    onclickCloseFunction: () {
-                      if (i > 1) {
-                        setState(() {
-                          i--;
-                        });
-                      }
-                    },
-                    callback: (p0) {
-                      setState(() {
-                        qustions.add(p0);
-                      });
-                    },
-                    answerList: (p0) {
-                      ans == p0;
-                    },
-                  );
-                },
-              ),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    i++;
-                  });
-                },
-                icon: const Icon(Icons.add),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-      bottomNavigationBar: CustomButton(
-        buttonHeight: 70,
-        text: "Post",
-        onClick: () {
-          ApiManager().createPost(
-            context,
-            widget.userDetails?.type,
-            widget.userDetails?.token,
-            _surveyNameController.text,
-            qustions,
-            ans,
-          );
-        },
-        fontSize: 40,
-        fontWeight: FontWeight.w800,
-        buttonBackroundColor: Colors.blueGrey,
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(
+          left: 8.0,
+          right: 8.0,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            CustomButton(
+              buttonHeight: 50,
+              text: "ADD",
+              onClick: () {},
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              buttonBackroundColor: Colors.blueGrey,
+            ),
+            const SizedBox(
+              width: 10.0,
+            ),
+            Expanded(
+              child: CustomButton(
+                buttonHeight: 50,
+                text: "POST",
+                onClick: () {},
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                buttonBackroundColor: Colors.blueGrey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

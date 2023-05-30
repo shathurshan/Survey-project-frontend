@@ -340,15 +340,16 @@ class ApiManager {
 
   Future<CreateSurveyResponseModel?> createSurveyResponse(
     BuildContext context,
-    SubmitSurveyResponse? createResponseBody,
+    String? surveyName,
+    List<SubmitsurveyQuestions>? questions,
     String? type,
     String? token,
   ) async {
     http.Response response;
     CreateSurveyResponseModel? surveyResponse;
     String body = json.encode({
-      "surveyName": createResponseBody?.surveyName,
-      "questions": createResponseBody?.questions,
+      "surveyName": surveyName,
+      "questions": questions,
     });
     try {
       response = await http.post(
