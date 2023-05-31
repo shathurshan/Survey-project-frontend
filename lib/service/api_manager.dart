@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:survey_project_front_end/models/create_post_model.dart';
 import 'package:survey_project_front_end/models/create_survey_response_model.dart';
 import 'package:survey_project_front_end/models/signup_model.dart';
@@ -90,9 +91,12 @@ class ApiManager {
         encoding: Encoding.getByName("utf-8"),
       );
       if (response.statusCode == 200) {
+        SharedPreferences preferences = await SharedPreferences.getInstance();
         var jsonSring = response.body;
         var jsonMap = json.decode(jsonSring);
         userModel = Users.fromJson(jsonMap);
+        String? accessToken = userModel.token;
+        preferences.setString("token", accessToken ?? "");
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
@@ -119,16 +123,16 @@ class ApiManager {
 
   Future<List<dynamic>?> getAllSurveyPost(
     BuildContext context,
-    String? type,
-    String? token,
   ) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString("token");
     List<SurveyPosts>? surveyPostModel;
     http.Response response;
     try {
       response = await http.get(
         ApiStrings.getPostsUrl,
         headers: {
-          "Authorization": "$type $token",
+          "Authorization": "Bearer $token",
         },
       );
       if (response.statusCode == 200) {
@@ -143,6 +147,7 @@ class ApiManager {
         );
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),
@@ -154,32 +159,16 @@ class ApiManager {
 
   Future<CreatePostModel?> createPost(
     BuildContext context,
-    String? type,
-    String? token,
     String? surveyName,
-    List? questions,
-    List? answers,
+    Question? questions,
   ) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString("token");
     http.Response response;
     CreatePostModel? createPostModel;
     String body = json.encode({
       "surveyName": surveyName,
-      "questions": [
-        {
-          "question": "Are you have the .NET experience?",
-          "answers": [
-            {"answer": "yes"},
-            {"answer": "No"}
-          ]
-        },
-        {
-          "question": "So you know the mobile application development?",
-          "answers": [
-            {"answer": "< 1000 USD"},
-            {"answer": "1000USD -"}
-          ]
-        }
-      ]
+      "questions": [questions]
     });
     try {
       response = await http.post(
@@ -190,7 +179,7 @@ class ApiManager {
           "User-Agent": "PostmanRuntime/7.28.4",
           "Accept-Encoding": "gzip, deflate, br",
           "Connection": "keep-alive",
-          "Authorization": "$type $token"
+          "Authorization": "Bearer $token"
         },
         body: body,
         encoding: Encoding.getByName("utf-8"),
@@ -221,6 +210,7 @@ class ApiManager {
         );
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),
@@ -232,17 +222,17 @@ class ApiManager {
 
   Future<SurveyPosts?> getSurveyPostById(
     BuildContext context,
-    String? type,
-    String? token,
     String? postId,
   ) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString("token");
     SurveyPosts? surveyPost;
     http.Response response;
     try {
       response = await http.get(
         Uri.parse(ApiStrings.getPostsById.replaceAll("id", postId ?? "")),
         headers: {
-          "Authorization": "$type $token",
+          "Authorization": "Bearer $token",
         },
       );
       if (response.statusCode == 200) {
@@ -257,6 +247,7 @@ class ApiManager {
         );
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),
@@ -268,16 +259,16 @@ class ApiManager {
 
   Future<List<dynamic>?> getAllSurveyResponse(
     BuildContext context,
-    String? type,
-    String? token,
   ) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString("token");
     List<SureveyResponse>? surveyResponesModel;
     http.Response response;
     try {
       response = await http.get(
         ApiStrings.getSurveyResponseUrl,
         headers: {
-          "Authorization": "$type $token",
+          "Authorization": "Bearer $token",
         },
       );
       if (response.statusCode == 200) {
@@ -292,6 +283,7 @@ class ApiManager {
         );
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),
@@ -303,10 +295,10 @@ class ApiManager {
 
   Future<SureveyResponse?> getSurveyResponseById(
     BuildContext context,
-    String? type,
-    String? token,
     String? responseId,
   ) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString("token");
     SureveyResponse? surveyResponse;
     http.Response response;
     try {
@@ -314,7 +306,7 @@ class ApiManager {
         Uri.parse(ApiStrings.getSurveyResponseById
             .replaceAll("id", responseId ?? "")),
         headers: {
-          "Authorization": "$type $token",
+          "Authorization": "Bearer $token",
         },
       );
       if (response.statusCode == 200) {
@@ -329,6 +321,7 @@ class ApiManager {
         );
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),
@@ -342,9 +335,9 @@ class ApiManager {
     BuildContext context,
     String? surveyName,
     List<SubmitsurveyQuestions>? questions,
-    String? type,
-    String? token,
   ) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString("token");
     http.Response response;
     CreateSurveyResponseModel? surveyResponse;
     String body = json.encode({
@@ -360,7 +353,7 @@ class ApiManager {
           "User-Agent": "PostmanRuntime/7.28.4",
           "Accept-Encoding": "gzip, deflate, br",
           "Connection": "keep-alive",
-          "Authorization": "$type $token"
+          "Authorization": "Bearer $token"
         },
         body: body,
         encoding: Encoding.getByName("utf-8"),
@@ -391,6 +384,7 @@ class ApiManager {
         );
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),
@@ -398,5 +392,50 @@ class ApiManager {
       );
     }
     return surveyResponse;
+  }
+
+  Future<CreateSurveyResponseModel?> deleteSurveyPostById(
+    BuildContext context,
+    String? postId,
+  ) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString("token");
+    CreateSurveyResponseModel? surveyPost;
+    http.Response response;
+    try {
+      response = await http.delete(
+        Uri.parse(
+            ApiStrings.deletesurveyPostById.replaceAll("id", postId ?? "")),
+        headers: {
+          "Authorization": "Bearer $token",
+        },
+      );
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "The Post is Deleted Successfully",
+          ),
+        );
+        return jsonResponse;
+      } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "Unauthorized Access",
+          ),
+        );
+      }
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        showSnackBarToScreen(
+          e.toString(),
+        ),
+      );
+    }
+    return surveyPost;
   }
 }

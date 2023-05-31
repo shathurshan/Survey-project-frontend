@@ -1,8 +1,9 @@
 // ignore_for_file: equal_keys_in_map
 
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/ui/admin/add_Question_screen.dart';
 import 'package:survey_project_front_end/ui/admin/create_post_screen.dart';
-import 'package:survey_project_front_end/ui/admin/survey_post_admin_detail_scree.dart';
+import 'package:survey_project_front_end/ui/admin/survey_post_admin_detail_screen.dart';
 import 'package:survey_project_front_end/ui/authendication/login_screen.dart';
 import 'package:survey_project_front_end/ui/authendication/register_screen.dart';
 import 'package:survey_project_front_end/ui/user/question_answer_dashbord.dart';
@@ -36,6 +37,8 @@ class MyApp extends StatelessWidget {
         ViewResponseScreen.routeName: (ctx) => const ViewResponseScreen(),
         SurveyPostAdminDetailScreen.routeName: (ctx) =>
             const SurveyPostAdminDetailScreen(),
+        CreateQuestionAndAnswerScreen.routeName: (ctx) =>
+            CreateQuestionAndAnswerScreen(),
       },
     );
   }

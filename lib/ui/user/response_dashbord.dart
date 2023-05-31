@@ -45,8 +45,6 @@ class _ResponseDashbordScreenState extends State<ResponseDashbordScreen> {
                   ApiManager()
                       .getSurveyResponseById(
                     context,
-                    widget.type,
-                    widget.token,
                     widget.responseData?[index]["id"],
                   )
                       .then(

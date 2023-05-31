@@ -17,6 +17,18 @@ class SurveyPosts {
     required this.questions,
   });
 
+  SurveyPosts copyWith({
+    String? id,
+    String? surveyName,
+    List<Question>? questions,
+  }) {
+    return SurveyPosts(
+      id: id ?? this.id,
+      surveyName: surveyName ?? this.surveyName,
+      questions: questions ?? this.questions,
+    );
+  }
+
   factory SurveyPosts.fromJson(Map<String, dynamic> json) => SurveyPosts(
         id: json["id"],
         surveyName: json["surveyName"],

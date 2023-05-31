@@ -61,8 +61,6 @@ class _QuestionAnswerDashbordScreenState
       context,
       widget.surveyName ?? "",
       questionList ?? [],
-      widget.userDetails?.type,
-      widget.userDetails?.token,
     )
         .then(
       (value) {

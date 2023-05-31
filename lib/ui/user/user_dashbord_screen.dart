@@ -4,7 +4,7 @@ import 'package:survey_project_front_end/models/survey_post_model.dart';
 import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/ui/admin/create_post_screen.dart';
-import 'package:survey_project_front_end/ui/admin/survey_post_admin_detail_scree.dart';
+import 'package:survey_project_front_end/ui/admin/survey_post_admin_detail_screen.dart';
 import 'package:survey_project_front_end/ui/user/question_answer_dashbord.dart';
 import 'package:survey_project_front_end/ui/user/response_dashbord.dart';
 import 'package:survey_project_front_end/widgets/custom_drawer.dart';
@@ -23,12 +23,16 @@ class UserDashbordScreen extends StatefulWidget {
 }
 
 class _UserDashbordScreenState extends State<UserDashbordScreen> {
+  String? title;
   @override
   Widget build(BuildContext context) {
+    widget.userDetails?.roles == Roles.roleAdmin.names
+        ? title = "Admin"
+        : title = "User";
     return Scaffold(
       backgroundColor: Colors.grey,
       appBar: AppBar(
-        title: const Text("User Dashbord"),
+        title: Text("$title Dashbord"),
         centerTitle: true,
       ),
       drawer: CustomDrawer(
@@ -48,8 +52,6 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
           ApiManager()
               .getAllSurveyResponse(
             context,
-            widget.userDetails?.type,
-            widget.userDetails?.token,
           )
               .then(
             (value) {
@@ -80,8 +82,6 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
           child: FutureBuilder<List<dynamic>?>(
             future: ApiManager().getAllSurveyPost(
               context,
-              widget.userDetails?.type,
-              widget.userDetails?.token,
             ),
             builder: (context, AsyncSnapshot<List<dynamic>?> snapshot) {
               List<dynamic>? posts = snapshot.data;
@@ -93,66 +93,73 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
               return ListView.builder(
                 itemCount: posts?.length,
                 itemBuilder: (context, index) {
-                  return SurveyPostCard(
-                    surveyName: posts?[index]["surveyName"],
-                    surveyId: posts?[index]["id"],
-                    onClickCardFunction:
-                        widget.userDetails?.roles == Roles.roleUser.names
-                            ? () {
-                                ApiManager()
-                                    .getSurveyPostById(
-                                  context,
-                                  widget.userDetails?.type,
-                                  widget.userDetails?.token,
-                                  posts?[index]["id"],
-                                )
-                                    .then(
-                                  (SurveyPosts? value) {
-                                    if (value != null) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) {
-                                            return QuestionAnswerDashbordScreen(
-                                              surveyPosts: value,
-                                              surveyName: posts?[index]
-                                                  ["surveyName"],
-                                              userDetails: widget.userDetails,
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    }
-                                  },
-                                );
-                              }
-                            : () {
-                                ApiManager()
-                                    .getSurveyPostById(
-                                  context,
-                                  widget.userDetails?.type,
-                                  widget.userDetails?.token,
-                                  posts?[index]["id"],
-                                )
-                                    .then(
-                                  (SurveyPosts? value) {
-                                    if (value != null) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) {
-                                            return SurveyPostAdminDetailScreen(
-                                              surveyPosts: value,
-                                              userDetails: widget.userDetails,
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    }
-                                  },
-                                );
-                              },
-                  );
+                  return (posts?.length ?? 0) < 0
+                      ? const Center(
+                          child: Text(
+                            "No Any Survey Posts are Screated",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      : SurveyPostCard(
+                          surveyName: posts?[index]["surveyName"],
+                          surveyId: posts?[index]["id"],
+                          onClickCardFunction: widget.userDetails?.roles ==
+                                  Roles.roleUser.names
+                              ? () {
+                                  ApiManager()
+                                      .getSurveyPostById(
+                                    context,
+                                    posts?[index]["id"],
+                                  )
+                                      .then(
+                                    (SurveyPosts? value) {
+                                      if (value != null) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return QuestionAnswerDashbordScreen(
+                                                surveyPosts: value,
+                                                surveyName: posts?[index]
+                                                    ["surveyName"],
+                                                userDetails: widget.userDetails,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  );
+                                }
+                              : () {
+                                  ApiManager()
+                                      .getSurveyPostById(
+                                    context,
+                                    posts?[index]["id"],
+                                  )
+                                      .then(
+                                    (SurveyPosts? value) {
+                                      if (value != null) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return SurveyPostAdminDetailScreen(
+                                                surveyPosts: value,
+                                                userDetails: widget.userDetails,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  );
+                                },
+                        );
                 },
               );
             },

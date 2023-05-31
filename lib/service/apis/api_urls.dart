@@ -12,7 +12,10 @@ class ApiStrings {
   static const String getSurveyResponse = "http://$ip:8080/api/response/posts";
   static const String getSurveyResponseById =
       "http://$ip:8080/api/response/posts/id";
-      static const String createSurveyResponse = "http://$ip:8080/api/response/create";
+  static const String createSurveyResponse =
+      "http://$ip:8080/api/response/create";
+  static const String deletesurveyPostById =
+      "http://$ip:8080/api/survey/postdelete/id";
 
   static var getPostsUrl = Uri.parse(getPosts);
   static var userSignin = Uri.parse(signIn);
