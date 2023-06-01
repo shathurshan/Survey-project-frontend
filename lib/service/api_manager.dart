@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:survey_project_front_end/models/create_post_model.dart';
-import 'package:survey_project_front_end/models/create_survey_response_model.dart';
 import 'package:survey_project_front_end/models/signup_model.dart';
 import 'package:survey_project_front_end/models/submit_survey_response_model.dart';
 import 'package:survey_project_front_end/models/survey_post_model.dart';
@@ -13,7 +11,7 @@ import 'package:survey_project_front_end/service/apis/api_urls.dart';
 import 'package:survey_project_front_end/widgets/show_snackbar.dart';
 
 class ApiManager {
-  Future<SignUpModel?> signUpUsers(
+  Future<CommonMessageResponseModel?> signUpUsers(
     BuildContext context,
     String? username,
     String? email,
@@ -21,7 +19,7 @@ class ApiManager {
     String? roles,
   ) async {
     http.Response response;
-    SignUpModel? signupModel;
+    CommonMessageResponseModel? signupModel;
     String body = json.encode({
       "username": username,
       "email": email,
@@ -44,7 +42,7 @@ class ApiManager {
       if (response.statusCode == 200) {
         var jsonSring = response.body;
         var jsonMap = json.decode(jsonSring);
-        signupModel = SignUpModel.fromJson(jsonMap);
+        signupModel = CommonMessageResponseModel.fromJson(jsonMap);
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
@@ -121,6 +119,11 @@ class ApiManager {
     return userModel;
   }
 
+  Future<void> logOut() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.clear();
+  }
+
   Future<List<dynamic>?> getAllSurveyPost(
     BuildContext context,
   ) async {
@@ -157,7 +160,7 @@ class ApiManager {
     return surveyPostModel;
   }
 
-  Future<CreatePostModel?> createPost(
+  Future<CommonMessageResponseModel?> createPost(
     BuildContext context,
     String? surveyName,
     Question? questions,
@@ -165,7 +168,7 @@ class ApiManager {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var token = preferences.getString("token");
     http.Response response;
-    CreatePostModel? createPostModel;
+    CommonMessageResponseModel? createPostModel;
     String body = json.encode({
       "surveyName": surveyName,
       "questions": [questions]
@@ -187,7 +190,7 @@ class ApiManager {
       if (response.statusCode == 200) {
         var jsonSring = response.body;
         var jsonMap = json.decode(jsonSring);
-        createPostModel = CreatePostModel.fromJson(jsonMap);
+        createPostModel = CommonMessageResponseModel.fromJson(jsonMap);
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
@@ -331,7 +334,7 @@ class ApiManager {
     return surveyResponse;
   }
 
-  Future<CreateSurveyResponseModel?> createSurveyResponse(
+  Future<CommonMessageResponseModel?> createSurveyResponse(
     BuildContext context,
     String? surveyName,
     List<SubmitsurveyQuestions>? questions,
@@ -339,7 +342,7 @@ class ApiManager {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var token = preferences.getString("token");
     http.Response response;
-    CreateSurveyResponseModel? surveyResponse;
+    CommonMessageResponseModel? surveyResponse;
     String body = json.encode({
       "surveyName": surveyName,
       "questions": questions,
@@ -361,7 +364,7 @@ class ApiManager {
       if (response.statusCode == 200) {
         var jsonSring = response.body;
         var jsonMap = json.decode(jsonSring);
-        surveyResponse = CreateSurveyResponseModel.fromJson(jsonMap);
+        surveyResponse = CommonMessageResponseModel.fromJson(jsonMap);
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           showSnackBarToScreen(
@@ -394,13 +397,13 @@ class ApiManager {
     return surveyResponse;
   }
 
-  Future<CreateSurveyResponseModel?> deleteSurveyPostById(
+  Future<CommonMessageResponseModel?> deleteSurveyPostById(
     BuildContext context,
     String? postId,
   ) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var token = preferences.getString("token");
-    CreateSurveyResponseModel? surveyPost;
+    CommonMessageResponseModel? surveyPost;
     http.Response response;
     try {
       response = await http.delete(
@@ -429,7 +432,6 @@ class ApiManager {
       }
     } catch (e) {
       // ignore: use_build_context_synchronously
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         showSnackBarToScreen(
           e.toString(),

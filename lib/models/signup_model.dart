@@ -1,18 +1,18 @@
 import 'dart:convert';
 
-SignUpModel signUpModelFromJson(String str) =>
-    SignUpModel.fromJson(json.decode(str));
+CommonMessageResponseModel commonMessageResponseModelFromJson(String str) =>
+    CommonMessageResponseModel.fromJson(json.decode(str));
 
-String signUpModelToJson(SignUpModel data) => json.encode(data.toJson());
+String commonMessageResponseModelToJson(CommonMessageResponseModel data) => json.encode(data.toJson());
 
-class SignUpModel {
+class CommonMessageResponseModel {
   String message;
 
-  SignUpModel({
+  CommonMessageResponseModel({
     required this.message,
   });
 
-  factory SignUpModel.fromJson(Map<String, dynamic> json) => SignUpModel(
+  factory CommonMessageResponseModel.fromJson(Map<String, dynamic> json) => CommonMessageResponseModel(
         message: json["message"],
       );
 

@@ -6,14 +6,12 @@ import 'package:survey_project_front_end/widgets/survey_post_card.dart';
 
 class ResponseDashbordScreen extends StatefulWidget {
   static const routeName = '/responsedashbordscreen';
-  final String? token;
-  final String? type;
   final List<dynamic>? responseData;
+  final String? userId;
   const ResponseDashbordScreen({
     super.key,
-    this.token,
-    this.type,
     this.responseData,
+    this.userId,
   });
 
   @override
@@ -40,7 +38,7 @@ class _ResponseDashbordScreenState extends State<ResponseDashbordScreen> {
             itemCount: widget.responseData?.length,
             itemBuilder: (context, index) {
               return SurveyPostCard(
-                surveyName: widget.responseData?[index]["surveyName"],
+                surveyName: widget.responseData?[index]["surveyId"],
                 onClickCardFunction: () {
                   ApiManager()
                       .getSurveyResponseById(
@@ -56,6 +54,7 @@ class _ResponseDashbordScreenState extends State<ResponseDashbordScreen> {
                             builder: (context) {
                               return ViewResponseScreen(
                                 surveyResponseDetails: value,
+                                userId: widget.userId,
                               );
                             },
                           ),

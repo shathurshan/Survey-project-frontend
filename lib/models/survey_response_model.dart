@@ -1,62 +1,102 @@
 // To parse this JSON data, do
 //
-//     final SureveyResponse = SureveyResponseFromJson(jsonString);
+//     final sureveyResponse = sureveyResponseFromJson(jsonString);
 
 import 'dart:convert';
 
-List<SureveyResponse> elcomeFromJson(String str) => List<SureveyResponse>.from(
-    json.decode(str).map((x) => SureveyResponse.fromJson(x)));
+SureveyResponse sureveyResponseFromJson(String str) => SureveyResponse.fromJson(json.decode(str));
 
-String elcomeToJson(List<SureveyResponse> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String sureveyResponseToJson(SureveyResponse data) => json.encode(data.toJson());
 
 class SureveyResponse {
-  String id;
-  String surveyName;
-  List<SureveyResponseQuestion> questions;
+    String surveyId;
+    List<String> userId;
+    List<SureveyResponseQuestion> questions;
 
-  SureveyResponse({
-    required this.id,
-    required this.surveyName,
-    required this.questions,
-  });
+    SureveyResponse({
+        required this.surveyId,
+        required this.userId,
+        required this.questions,
+    });
 
-  factory SureveyResponse.fromJson(Map<String, dynamic> json) =>
-      SureveyResponse(
-        id: json["id"],
-        surveyName: json["surveyName"],
-        questions: List<SureveyResponseQuestion>.from(
-            json["questions"].map((x) => SureveyResponseQuestion.fromJson(x))),
-      );
+    SureveyResponse copyWith({
+        String? surveyId,
+        List<String>? userId,
+        List<SureveyResponseQuestion>? questions,
+    }) => 
+        SureveyResponse(
+            surveyId: surveyId ?? this.surveyId,
+            userId: userId ?? this.userId,
+            questions: questions ?? this.questions,
+        );
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "surveyName": surveyName,
+    factory SureveyResponse.fromJson(Map<String, dynamic> json) => SureveyResponse(
+        surveyId: json["surveyId"],
+        userId: List<String>.from(json["userId"].map((x) => x)),
+        questions: List<SureveyResponseQuestion>.from(json["questions"].map((x) => SureveyResponseQuestion.fromJson(x))),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "surveyId": surveyId,
+        "userId": List<dynamic>.from(userId.map((x) => x)),
         "questions": List<dynamic>.from(questions.map((x) => x.toJson())),
-      };
+    };
 }
 
 class SureveyResponseQuestion {
-  int id;
-  String question;
-  String answer;
+    String question;
+    List<SureveyResponseAnswer> answers;
 
-  SureveyResponseQuestion({
-    required this.id,
-    required this.question,
-    required this.answer,
-  });
+    SureveyResponseQuestion({
+        required this.question,
+        required this.answers,
+    });
 
-  factory SureveyResponseQuestion.fromJson(Map<String, dynamic> json) =>
-      SureveyResponseQuestion(
-        id: json["id"],
+    SureveyResponseQuestion copyWith({
+        String? question,
+        List<SureveyResponseAnswer>? answers,
+    }) => 
+        SureveyResponseQuestion(
+            question: question ?? this.question,
+            answers: answers ?? this.answers,
+        );
+
+    factory SureveyResponseQuestion.fromJson(Map<String, dynamic> json) => SureveyResponseQuestion(
         question: json["question"],
-        answer: json["answer"],
-      );
+        answers: List<SureveyResponseAnswer>.from(json["answers"].map((x) => SureveyResponseAnswer.fromJson(x))),
+    );
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
+    Map<String, dynamic> toJson() => {
         "question": question,
+        "answers": List<dynamic>.from(answers.map((x) => x.toJson())),
+    };
+}
+
+class SureveyResponseAnswer {
+    String answer;
+    List<String> userIds;
+
+    SureveyResponseAnswer({
+        required this.answer,
+        required this.userIds,
+    });
+
+    SureveyResponseAnswer copyWith({
+        String? answer,
+        List<String>? userIds,
+    }) => 
+        SureveyResponseAnswer(
+            answer: answer ?? this.answer,
+            userIds: userIds ?? this.userIds,
+        );
+
+    factory SureveyResponseAnswer.fromJson(Map<String, dynamic> json) => SureveyResponseAnswer(
+        answer: json["answer"],
+        userIds: List<String>.from(json["userIds"].map((x) => x)),
+    );
+
+    Map<String, dynamic> toJson() => {
         "answer": answer,
-      };
+        "userIds": List<dynamic>.from(userIds.map((x) => x)),
+    };
 }

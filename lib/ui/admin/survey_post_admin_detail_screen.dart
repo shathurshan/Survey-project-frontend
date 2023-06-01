@@ -76,7 +76,6 @@ class _SurveyPostAdminDetailScreenState
                     }
                   },
                 );
-                print(widget.surveyPosts?.id);
               }
             },
           ),

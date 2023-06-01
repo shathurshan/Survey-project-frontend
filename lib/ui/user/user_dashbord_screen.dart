@@ -5,8 +5,10 @@ import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/ui/admin/create_post_screen.dart';
 import 'package:survey_project_front_end/ui/admin/survey_post_admin_detail_screen.dart';
+import 'package:survey_project_front_end/ui/authendication/login_screen.dart';
 import 'package:survey_project_front_end/ui/user/question_answer_dashbord.dart';
 import 'package:survey_project_front_end/ui/user/response_dashbord.dart';
+import 'package:survey_project_front_end/widgets/confirm_dialog_box.dart';
 import 'package:survey_project_front_end/widgets/custom_drawer.dart';
 import 'package:survey_project_front_end/widgets/survey_post_card.dart';
 
@@ -34,6 +36,33 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
       appBar: AppBar(
         title: Text("$title Dashbord"),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return ConfirmDialogBox(
+                    message: "Do you want to Logout",
+                    onConfirm: () {
+                      ApiManager().logOut().then(
+                            (value) => Navigator.pushNamed(
+                              context,
+                              LoginScreen.routeName,
+                            ),
+                          );
+                    },
+                    buttonText: "Logout",
+                    textButtonText: "No",
+                  );
+                },
+              );
+            },
+            icon: const Icon(
+              Icons.logout,
+            ),
+          ),
+        ],
       ),
       drawer: CustomDrawer(
         name: widget.userDetails?.username,
@@ -61,8 +90,7 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
                   builder: (context) {
                     return ResponseDashbordScreen(
                       responseData: value,
-                      token: widget.userDetails?.token,
-                      type: widget.userDetails?.type,
+                      userId: widget.userDetails?.id,
                     );
                   },
                 ),
@@ -96,7 +124,7 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
                   return (posts?.length ?? 0) < 0
                       ? const Center(
                           child: Text(
-                            "No Any Survey Posts are Screated",
+                            "No Any Survey Posts are Created",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w400,

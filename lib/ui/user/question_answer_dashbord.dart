@@ -25,7 +25,7 @@ class QuestionAnswerDashbordScreen extends StatefulWidget {
 class _QuestionAnswerDashbordScreenState
     extends State<QuestionAnswerDashbordScreen> {
   var _questionIndex = 0;
-  String? buttonText = "Next Questions";
+  String? buttonText = "More Questions..";
   String? selectedAnswer;
   String? answeredQuestion;
   List<SubmitsurveyQuestions>? questionList = [];
@@ -34,7 +34,7 @@ class _QuestionAnswerDashbordScreenState
     _questionIndex = _questionIndex + 1;
     if (_questionIndex < (widget.surveyPosts?.questions?.length ?? 1)) {
       setState(() {
-        buttonText = "Next Questions";
+        buttonText = "More Questions..";
       });
     } else {
       setState(() {
@@ -128,9 +128,11 @@ class _QuestionAnswerDashbordScreenState
         fontSize: 40,
         fontWeight: FontWeight.w800,
         buttonBackroundColor: Colors.blueGrey,
-        onClick: () {
-          submitSurveyAnswers(context);
-        },
+        onClick: buttonText == "submit"
+            ? () {
+                submitSurveyAnswers(context);
+              }
+            : () {},
       ),
     );
   }
