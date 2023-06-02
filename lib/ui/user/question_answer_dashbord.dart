@@ -8,12 +8,12 @@ import 'package:survey_project_front_end/widgets/custom_button.dart';
 class QuestionAnswerDashbordScreen extends StatefulWidget {
   static const routeName = '/questionanswerdashbordscreen';
   final SurveyPosts? surveyPosts;
-  final String? surveyName;
+  final String? surveyId;
   final Users? userDetails;
   const QuestionAnswerDashbordScreen({
     super.key,
     this.surveyPosts,
-    this.surveyName,
+    this.surveyId,
     this.userDetails,
   });
 
@@ -28,7 +28,9 @@ class _QuestionAnswerDashbordScreenState
   String? buttonText = "More Questions..";
   String? selectedAnswer;
   String? answeredQuestion;
-  List<SubmitsurveyQuestions>? questionList = [];
+  List<SubmitSurveyQuestion>? questionList = [];
+  List<SubmitSurveyAnswer>? answerList = [];
+  List<String>? userIds = [];
 
   void _answerQuestion(String answer) {
     _questionIndex = _questionIndex + 1;
@@ -42,14 +44,23 @@ class _QuestionAnswerDashbordScreenState
       });
     }
     setState(() {
+      userIds?.add(widget.userDetails?.id ?? "");
+      answerList?.add(
+        SubmitSurveyAnswer(
+          answer: answer,
+          userIds: userIds,
+        ),
+      );
+    });
+    setState(() {
       questionList?.add(
-        SubmitsurveyQuestions(
+        SubmitSurveyQuestion(
           question:
               _questionIndex <= (widget.surveyPosts?.questions?.length ?? 1)
                   ? (widget.surveyPosts?.questions ?? [])[_questionIndex - 1]
                       .question
                   : "",
-          answer: answer,
+          answers: answerList,
         ),
       );
     });
@@ -59,7 +70,7 @@ class _QuestionAnswerDashbordScreenState
     ApiManager()
         .createSurveyResponse(
       context,
-      widget.surveyName ?? "",
+      widget.surveyId ?? "",
       questionList ?? [],
     )
         .then(
@@ -124,11 +135,11 @@ class _QuestionAnswerDashbordScreenState
       ),
       bottomNavigationBar: CustomButton(
         buttonHeight: 70,
-        text: buttonText ?? "submit",
+        text: buttonText ?? "Submit",
         fontSize: 40,
         fontWeight: FontWeight.w800,
         buttonBackroundColor: Colors.blueGrey,
-        onClick: buttonText == "submit"
+        onClick: buttonText == "Submit"
             ? () {
                 submitSurveyAnswers(context);
               }

@@ -4,6 +4,7 @@ import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
+// ignore: must_be_immutable
 class CreateQuestionAndAnswerScreen extends StatefulWidget {
   static const routeName = '/addquestionandanswerscreen';
   SurveyPosts? survey;
@@ -59,16 +60,18 @@ class _CreateQuestionAndAnswerScreenState
       final survey = widget.survey?.copyWith(
           questions: [...(widget.survey?.questions ?? []), question]);
       ApiManager()
-          .createPost(
+          .updateSurveyPost(
         context,
-        widget.survey?.surveyName,
-        question,
+        survey?.id,
+        survey,
       )
-          .then((value) {
-        if (value != null) {
-          return print(value);
-        }
-      });
+          .then(
+        (SurveyPosts? value) {
+          if (value != null) {
+            print(value.questions);
+          }
+        },
+      );
     }
   }
 

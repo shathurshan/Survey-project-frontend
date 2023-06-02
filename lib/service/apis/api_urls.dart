@@ -3,7 +3,7 @@ class ApiStrings {
   static const String getPosts = "http://$ip:8080/api/survey/posts";
   static const String getPostsById = "http://$ip:8080/api/survey/posts/id";
   static const String updatePostById =
-      "http://$ip:8080/api/survey/postupdate/{id}";
+      "http://$ip:8080/api/survey/postupdate/id";
   static const String deletePostById =
       "http://$ip:8080/api/survey/postdelete/{id}";
   static const String createPost = "http://$ip:8080/api/survey/create";
@@ -16,6 +16,8 @@ class ApiStrings {
       "http://$ip:8080/api/response/create";
   static const String deletesurveyPostById =
       "http://$ip:8080/api/survey/postdelete/id";
+  static const String getAllUserSurveyResponse =
+      "http://$ip:8080/api/userSurveyResponse/getAll";
 
   static var getPostsUrl = Uri.parse(getPosts);
   static var userSignin = Uri.parse(signIn);
@@ -25,4 +27,5 @@ class ApiStrings {
   static var getSurveyResponseUrl = Uri.parse(getSurveyResponse);
   static var getSurveyResponseByIdUrl = Uri.parse(getSurveyResponseById);
   static var createResponseUrl = Uri.parse(createSurveyResponse);
+  static var getAllSurveyResponseUrl = Uri.parse(getAllUserSurveyResponse);
 }

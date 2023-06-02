@@ -15,9 +15,11 @@ import 'package:survey_project_front_end/widgets/survey_post_card.dart';
 class UserDashbordScreen extends StatefulWidget {
   static const routeName = '/userdashbordscreen';
   final Users? userDetails;
+  final List<dynamic>? surveyIds;
   const UserDashbordScreen({
     super.key,
     this.userDetails,
+    this.surveyIds,
   });
 
   @override
@@ -84,12 +86,21 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
           )
               .then(
             (value) {
+              List<dynamic>? userContainPosts = [];
+              value?.forEach(
+                (element) {
+                  if (widget.surveyIds?.contains(element["surveyId"]) ??
+                      false) {
+                    userContainPosts.add(element);
+                  }
+                },
+              );
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) {
                     return ResponseDashbordScreen(
-                      responseData: value,
+                      responseData: userContainPosts,
                       userId: widget.userDetails?.id,
                     );
                   },
@@ -113,81 +124,86 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
             ),
             builder: (context, AsyncSnapshot<List<dynamic>?> snapshot) {
               List<dynamic>? posts = snapshot.data;
+              //declare a new list to store unanswered surveys
+              List<dynamic>? unasweredSurveyList = [];
+              //iterate posts list
+              //check if the post ID is in surveyIds list
+              //if not, add post to new list
+              posts?.forEach(
+                (element) {
+                  if (widget.surveyIds?.contains(element["id"]) ?? false) {
+                    print(element["id"]);
+                  } else {
+                    setState(() {
+                      unasweredSurveyList.add(element);
+                    });
+                  }
+                },
+              );
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               }
               return ListView.builder(
-                itemCount: posts?.length,
+                itemCount: unasweredSurveyList.length,
                 itemBuilder: (context, index) {
-                  return (posts?.length ?? 0) < 0
-                      ? const Center(
-                          child: Text(
-                            "No Any Survey Posts are Created",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white,
-                            ),
-                          ),
-                        )
-                      : SurveyPostCard(
-                          surveyName: posts?[index]["surveyName"],
-                          surveyId: posts?[index]["id"],
-                          onClickCardFunction: widget.userDetails?.roles ==
-                                  Roles.roleUser.names
-                              ? () {
-                                  ApiManager()
-                                      .getSurveyPostById(
+                  return SurveyPostCard(
+                    surveyName: unasweredSurveyList[index]["surveyName"],
+                    surveyId: unasweredSurveyList[index]["id"],
+                    onClickCardFunction: widget.userDetails?.roles ==
+                            Roles.roleUser.names
+                        ? () {
+                            ApiManager()
+                                .getSurveyPostById(
+                              context,
+                              unasweredSurveyList[index]["id"],
+                            )
+                                .then(
+                              (SurveyPosts? value) {
+                                if (value != null) {
+                                  Navigator.push(
                                     context,
-                                    posts?[index]["id"],
-                                  )
-                                      .then(
-                                    (SurveyPosts? value) {
-                                      if (value != null) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) {
-                                              return QuestionAnswerDashbordScreen(
-                                                surveyPosts: value,
-                                                surveyName: posts?[index]
-                                                    ["surveyName"],
-                                                userDetails: widget.userDetails,
-                                              );
-                                            },
-                                          ),
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return QuestionAnswerDashbordScreen(
+                                          surveyPosts: value,
+                                          surveyId: unasweredSurveyList[index]
+                                              ["id"],
+                                          userDetails: widget.userDetails,
                                         );
-                                      }
-                                    },
+                                      },
+                                    ),
                                   );
                                 }
-                              : () {
-                                  ApiManager()
-                                      .getSurveyPostById(
+                              },
+                            );
+                          }
+                        : () {
+                            ApiManager()
+                                .getSurveyPostById(
+                              context,
+                              posts?[index]["id"],
+                            )
+                                .then(
+                              (SurveyPosts? value) {
+                                if (value != null) {
+                                  Navigator.push(
                                     context,
-                                    posts?[index]["id"],
-                                  )
-                                      .then(
-                                    (SurveyPosts? value) {
-                                      if (value != null) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) {
-                                              return SurveyPostAdminDetailScreen(
-                                                surveyPosts: value,
-                                                userDetails: widget.userDetails,
-                                              );
-                                            },
-                                          ),
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return SurveyPostAdminDetailScreen(
+                                          surveyPosts: value,
+                                          userDetails: widget.userDetails,
                                         );
-                                      }
-                                    },
+                                      },
+                                    ),
                                   );
-                                },
-                        );
+                                }
+                              },
+                            );
+                          },
+                  );
                 },
               );
             },

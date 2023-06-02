@@ -337,7 +337,7 @@ class ApiManager {
   Future<CommonMessageResponseModel?> createSurveyResponse(
     BuildContext context,
     String? surveyName,
-    List<SubmitsurveyQuestions>? questions,
+    List<SubmitSurveyQuestion>? questions,
   ) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var token = preferences.getString("token");
@@ -439,5 +439,98 @@ class ApiManager {
       );
     }
     return surveyPost;
+  }
+
+  Future<List<dynamic>?> getUserSurveyResponse(BuildContext context) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString("token");
+    List<dynamic>? userSurveyResponse;
+    http.Response response;
+    try {
+      response = await http.get(
+        ApiStrings.getAllSurveyResponseUrl,
+        headers: {
+          "Authorization": "Bearer $token",
+        },
+      );
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        return jsonResponse;
+      } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "Unauthorized Access",
+          ),
+        );
+      }
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        showSnackBarToScreen(
+          e.toString(),
+        ),
+      );
+    }
+    return userSurveyResponse;
+  }
+
+  Future<SurveyPosts?> updateSurveyPost(
+    BuildContext context,
+    String? postId,
+    SurveyPosts? survey,
+  ) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString("token");
+    SurveyPosts? updateSurveyPostResponse;
+    http.Response response;
+    String body = json.encode({
+      "id": survey?.id,
+      "surveyName": survey?.surveyName,
+      "questions": survey?.questions,
+    });
+    try {
+      response = await http.put(
+        Uri.parse(
+          ApiStrings.updatePostById.replaceAll("id", postId ?? ""),
+        ),
+        headers: {
+          "Accept": "*/*",
+          "Content-Type": "application/json",
+          "User-Agent": "PostmanRuntime/7.28.4",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Connection": "keep-alive",
+          "Authorization": "Bearer $token"
+        },
+        body: body,
+        encoding: Encoding.getByName("utf-8"),
+      );
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "The Survey Post is Updated Successfully",
+          ),
+        );
+        return jsonResponse;
+      } else if (response.statusCode == 401) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          showSnackBarToScreen(
+            "Unauthorized Access",
+          ),
+        );
+      }
+    } catch (e) {
+      print("exception+++++++++++++++++++++++++$e");
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        showSnackBarToScreen(
+          e.toString(),
+        ),
+      );
+    }
+    return updateSurveyPostResponse;
   }
 }

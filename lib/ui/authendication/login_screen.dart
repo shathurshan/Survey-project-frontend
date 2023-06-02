@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:survey_project_front_end/enum/role.dart';
 import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
 import 'package:survey_project_front_end/ui/authendication/register_screen.dart';
@@ -17,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
   String? userName;
   String? pasword;
+  List<dynamic>? surveyIdsList = [];
 
   void submitSignInForm() {
     final isValid = formKey.currentState?.validate();
@@ -30,12 +32,25 @@ class _LoginScreenState extends State<LoginScreen> {
           .then(
         (Users? value) {
           if (value != null) {
+            ApiManager().getUserSurveyResponse(context).then(
+              (userSurveyResponsevalue) {
+                userSurveyResponsevalue?.forEach(
+                  (element) {
+                    if (element["userId"] == value.id &&
+                        value.roles == Roles.roleUser.names) {
+                          surveyIdsList?.add(element["surveyIds"]);
+                        }
+                  },
+                );
+              },
+            );
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
                   return UserDashbordScreen(
                     userDetails: value,
+                    surveyIds: surveyIdsList,
                   );
                 },
               ),
