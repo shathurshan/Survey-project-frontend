@@ -38,22 +38,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   (element) {
                     if (element["userId"] == value.id &&
                         value.roles == Roles.roleUser.names) {
-                          surveyIdsList?.add(element["surveyIds"]);
-                        }
+                      surveyIdsList?.addAll(element["surveyIds"]);
+                    }
                   },
                 );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return UserDashbordScreen(
+                        userDetails: value,
+                        surveyIds: surveyIdsList,
+                      );
+                    },
+                  ),
+                );
               },
-            );
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return UserDashbordScreen(
-                    userDetails: value,
-                    surveyIds: surveyIdsList,
-                  );
-                },
-              ),
             );
           }
         },

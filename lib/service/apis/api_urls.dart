@@ -1,5 +1,5 @@
 class ApiStrings {
-  static const String ip = "192.168.28.56";
+  static const String ip = "192.168.1.101";
   static const String getPosts = "http://$ip:8080/api/survey/posts";
   static const String getPostsById = "http://$ip:8080/api/survey/posts/id";
   static const String updatePostById =

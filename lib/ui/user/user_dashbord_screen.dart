@@ -131,12 +131,9 @@ class _UserDashbordScreenState extends State<UserDashbordScreen> {
               //if not, add post to new list
               posts?.forEach(
                 (element) {
-                  if (widget.surveyIds?.contains(element["id"]) ?? false) {
-                    print(element["id"]);
+                  if ((widget.surveyIds ?? []).contains(element["id"])) {
                   } else {
-                    setState(() {
-                      unasweredSurveyList.add(element);
-                    });
+                    unasweredSurveyList.add(element);
                   }
                 },
               );

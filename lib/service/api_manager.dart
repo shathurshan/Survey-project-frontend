@@ -336,7 +336,7 @@ class ApiManager {
 
   Future<CommonMessageResponseModel?> createSurveyResponse(
     BuildContext context,
-    String? surveyName,
+    String? surveyId,
     List<SubmitSurveyQuestion>? questions,
   ) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -344,7 +344,7 @@ class ApiManager {
     http.Response response;
     CommonMessageResponseModel? surveyResponse;
     String body = json.encode({
-      "surveyName": surveyName,
+      "surveyId": surveyId,
       "questions": questions,
     });
     try {

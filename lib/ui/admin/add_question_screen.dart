@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:survey_project_front_end/models/survey_post_model.dart';
 import 'package:survey_project_front_end/models/user_model.dart';
 import 'package:survey_project_front_end/service/api_manager.dart';
+import 'package:survey_project_front_end/ui/user/user_dashbord_screen.dart';
 import 'package:survey_project_front_end/widgets/custom_button.dart';
 
 // ignore: must_be_immutable
@@ -68,7 +69,10 @@ class _CreateQuestionAndAnswerScreenState
           .then(
         (SurveyPosts? value) {
           if (value != null) {
-            print(value.questions);
+            Navigator.pushNamed(
+              context,
+              UserDashbordScreen.routeName,
+            );
           }
         },
       );

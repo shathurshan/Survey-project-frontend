@@ -100,12 +100,16 @@ class _SurveyPostAdminDetailScreenState
             ),
             ...(widget.surveyPosts?.questions ?? [])
                 .map((Question? questionList) {
-              return questionList != null
+              if (questionList?.question != null) {
+                Question? newQuestion = questionList;
+              }
+              return questionList != null &&
+                      (questionList.question?.isNotEmpty ?? false)
                   ? Card(
                       margin: const EdgeInsets.all(10.0),
                       child: InkWell(
                         onTap: () {
-                          _editQuestion(questionList);
+                          _editQuestion((questionList));
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(15.0),
@@ -124,7 +128,8 @@ class _SurveyPostAdminDetailScreenState
                                       left: 10,
                                     ),
                                     child: Text(
-                                      questionList.question ?? "",
+                                      questionList.question ??
+                                          "Need To Add Questions",
                                       style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -165,11 +170,7 @@ class _SurveyPostAdminDetailScreenState
                         ),
                       ),
                     )
-                  : const Center(
-                      child: Text(
-                        "Still No Any Question are Created",
-                      ),
-                    );
+                  : Container();
             }),
           ],
         ),
